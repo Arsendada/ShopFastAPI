@@ -8,14 +8,14 @@ router = APIRouter()
 
 @router.post('/create')
 async def product_create(req: ProductModel,
-                          crud: ProductCrud = Depends(ProductCrud)):
+                          crud: ProductCrud = Depends()):
     result = await crud.add_product(req)
     return result
 
 
 @router.get('/get_product/{product_id}')
 async def get_product(product_id: int,
-                      crud: ProductCrud = Depends(ProductCrud)):
+                      crud: ProductCrud = Depends()):
     result = await crud.get_product(product_id)
     return result
 
@@ -23,7 +23,7 @@ async def get_product(product_id: int,
 @router.get('/all_product')
 async def get_all_product(offset: int = 0,
                           limit: int = 20,
-                          crud: ProductCrud = Depends(ProductCrud)):
+                          crud: ProductCrud = Depends()):
     result = await crud.get_all_product(offset, limit)
     return result
 
@@ -32,7 +32,7 @@ async def get_all_product(offset: int = 0,
 async def get_all_product_by_category(category_id: int,
                           offset: int = 0,
                           limit: int = 20,
-                          crud: ProductCrud = Depends(ProductCrud)):
+                          crud: ProductCrud = Depends()):
     result = await crud.get_all_product_by_category(category_id,
                                                     offset,
                                                     limit)
@@ -43,7 +43,7 @@ async def get_all_product_by_category(category_id: int,
 
 @router.delete('/delete/{product_id}')
 async def delete_product(product_id: int,
-                         crud: ProductCrud = Depends(ProductCrud)):
+                         crud: ProductCrud = Depends()):
     result = await crud.delete_product(product_id)
     if result:
         return True
@@ -53,7 +53,7 @@ async def delete_product(product_id: int,
 @router.patch('/update/{product_id}')
 async def update_product(product_id: int,
                          product_model: ProductModel,
-                         crud: ProductCrud = Depends(ProductCrud)):
+                         crud: ProductCrud = Depends()):
     result = await crud.update_product(product_id, product_model)
     if result:
         return result
