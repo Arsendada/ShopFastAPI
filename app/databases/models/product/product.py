@@ -36,4 +36,4 @@ class Comment(Base):
 
     user = relationship('User', back_populates="comments")
     product_id = Column(Integer, ForeignKey('product.id', ondelete='CASCADE'), nullable=False)
-    product = relationship('Product', back_populates="comments")
+    products = relationship('Product', back_populates="comments")
