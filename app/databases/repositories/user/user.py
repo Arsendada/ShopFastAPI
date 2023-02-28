@@ -24,7 +24,7 @@ class UserCrud(BaseCrud):
         check_email = await self.get_by_email(email=user.email)
         if check_email:
             raise HTTPException(status_code=404, detail="User already exist.")
-        new_user_data = user.dict(exclude_unset=True)
+        new_user_data = user.dict()
         del new_user_data['password2']
         password = new_user_data.pop('password')
         new_user_data["hashed_password"] = get_password_hash(password)

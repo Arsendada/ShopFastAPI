@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from app.databases.schemas.user.user import UserCreate
 from app.databases.repositories.user.user import UserCrud
 

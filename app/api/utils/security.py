@@ -1,8 +1,6 @@
-import jwt
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
-from jwt import PyJWTError
 from starlette.status import HTTP_403_FORBIDDEN
 
 from app.databases.repositories.user.user import UserCrud
@@ -19,7 +17,7 @@ async def get_current_user(crud: UserCrud = Depends(UserCrud),
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
-    except PyJWTError:
+    except JWTError:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
         )
