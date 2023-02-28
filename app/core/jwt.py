@@ -8,7 +8,7 @@ ALGORITHM = "HS256"
 access_token_jwt_subject = "access"
 
 
-def create_access_token(*, data: dict, expires_delta: timedelta = None):
+def create_access_token(*, data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta

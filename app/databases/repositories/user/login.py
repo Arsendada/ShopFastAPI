@@ -9,13 +9,23 @@ from app.core.security import verify_password
 from app.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.databases.repositories.base import BaseCrud
 from app.databases.models.user.user import User
+from app.databases.schemas.user.user import UserInDB
 
 
 class LoginCrud(BaseCrud):
+    async def get(self, user_id: int | None):
+        result = await self.sess.get(User, user_id)
+        print(result)
+        return result
+
     async def get_by_email(self, email: str):
         stmt = (select(User).where(User.email == email))
         result = await self.sess.execute(stmt)
-        return result.scalar_one_or_none()
+        result = result.scalar_one_or_none()
+        if result:
+            return UserInDB(**result.__dict__)
+        return result
+
 
     async def authenticate(self, *, email: str,
                            password: str,):
@@ -27,7 +37,6 @@ class LoginCrud(BaseCrud):
             raise HTTPException(status_code=400, detail="Inactive user")
         access_token_expires = timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        print(user.id)
         return {
             "access_token": create_access_token(
                 data={"user_id": user.id},

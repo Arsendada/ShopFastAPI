@@ -21,5 +21,4 @@ app.include_router(user.router,
                    tags=['User'])
 
 app.include_router(login.router,
-                   prefix='/login',
                    tags=['Login'])

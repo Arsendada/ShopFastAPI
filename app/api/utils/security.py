@@ -3,17 +3,18 @@ from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_403_FORBIDDEN
 
+from app.databases.repositories.user.login import LoginCrud
 from app.databases.repositories.user.user import UserCrud
 from app.core.jwt import ALGORITHM
 from app.core.settings import SECRET_KEY
 from app.databases.schemas.tokens.tokens import TokenPayload
-from app.databases.schemas.user.user import UserInDB
+from app.databases.schemas.user.user import User
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/login/access-token")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="token")
 
 
-async def get_current_user(crud: UserCrud = Depends(UserCrud),
-                          token: str = Security(reusable_oauth2)):
+async def get_current_user(crud: LoginCrud = Depends(),
+                          token: str = Depends(reusable_oauth2)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
@@ -27,16 +28,16 @@ async def get_current_user(crud: UserCrud = Depends(UserCrud),
     return user
 
 
-async def get_current_active_user(current_user: UserInDB = Security(get_current_user),
-                            crud: UserCrud = Depends(UserCrud)):
-    if not await crud.is_active(current_user):
+async def get_current_active_user(current_user: User = Depends(get_current_user),
+                            crud: LoginCrud = Depends()):
+    if not crud.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-async def get_current_active_superuser(current_user: UserInDB = Security(get_current_user),
-                                 crud: UserCrud = Depends(UserCrud)):
-    if not await crud.is_superuser(current_user):
+async def get_current_active_superuser(current_user: User = Depends(get_current_user),
+                                 crud: LoginCrud = Depends()):
+    if not crud.is_superuser(current_user):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
         )
