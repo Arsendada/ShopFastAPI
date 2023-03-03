@@ -24,7 +24,7 @@ class UserCrud(BaseCrud):
     async def get_by_email(self, email: str):
         stmt = (select(User).where(User.email == email))
         result = await self.sess.execute(stmt)
-        return result.scalar_one_or_none()
+        return result.scalar()
 
     async def is_active(self, user: UserInDB) -> bool:
         return user.is_active
@@ -99,3 +99,10 @@ class UserCrud(BaseCrud):
             return result
         except UnmappedInstanceError:
             return False
+
+    async def activate_user(self, user: UserInDB) -> bool:
+        setattr(user, 'is_active', True)
+        self.sess.add(user)
+        await self.sess.commit()
+        await self.sess.refresh(user)
+        return True

@@ -3,7 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.utils.security import get_current_active_user
 from app.core.email import send_reset_password_email
-from app.core.jwt import generate_password_reset_token, verify_password_reset_token
+from app.core.jwt import generate_password_reset_token, verify_password_reset_token, generate_new_account_token, \
+    verify_new_account_token
 from app.databases.repositories.user.user import UserCrud
 from app.databases.schemas.tokens.tokens import Token
 from app.databases.schemas.user.user import UserInDB, UserUpdatePassword
@@ -23,11 +24,6 @@ async def login_access_token(crud: UserCrud = Depends(),
 @router.get("/users/me/", response_model=UserInDB)
 async def read_users_me(current_user: UserInDB = Depends(get_current_active_user)):
     return current_user.__dict__
-
-
-@router.get("/users/me/items/")
-async def read_own_items(current_user: UserInDB = Depends(get_current_active_user)) -> str:
-    return [{"item_id": "Foo", "owner": current_user.username}]
 
 
 @router.post("/password-recovery/{email}")
@@ -63,3 +59,14 @@ async def reset_password(new_password: UserUpdatePassword,
         raise HTTPException(status_code=400, detail="Inactive user")
     result = await crud.reset_password(user, new_password)
     return result
+
+
+@router.get('/register/{token}')
+async def activate_user(token: str,
+                        crud: UserCrud = Depends()):
+    token_payload = verify_new_account_token(token)
+    user = await crud.get_by_email(token_payload)
+    if user:
+        await crud.activate_user(user)
+        return {"success": True, 'detail': f'User {user.username} has registered by email: {user.email} '}
+    return {'detail': 'Registration time expired'}
