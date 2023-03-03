@@ -4,14 +4,8 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from datetime import datetime
 
 
-class UserBase(BaseModel):
-    email: EmailStr = Field(...)
-    username: str = Field(...)
-
-
-class UserCreate(UserBase):
+class UserUpdatePassword(BaseModel):
     password: str = Field(...)
-
     # @validator('password')
     # def password_correct(cls, v):
     #     pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)' \
@@ -20,6 +14,13 @@ class UserCreate(UserBase):
     #     if re.match(pattern, v) is None:
     #         raise ValueError('Password has incorrect format.')
     #     return v
+
+class UserBase(BaseModel):
+    email: EmailStr = Field(...)
+    username: str = Field(...)
+
+
+class UserCreate(UserBase, UserUpdatePassword):
 
     class Config:
         orm_mode = True

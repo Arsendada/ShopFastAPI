@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.utils.security import get_current_active_user
 from app.core.email import send_reset_password_email
-from app.core.jwt import generate_password_reset_token
+from app.core.jwt import generate_password_reset_token, verify_password_reset_token
 from app.databases.repositories.user.user import UserCrud
 from app.databases.schemas.tokens.tokens import Token
-from app.databases.schemas.user.user import UserInDB
+from app.databases.schemas.user.user import UserInDB, UserUpdatePassword
 
 router = APIRouter()
 
@@ -46,3 +46,20 @@ async def recover_password(email: str,
     return {"msg": "Password recovery email sent"}
 
 
+@router.post("/reset-password/")
+async def reset_password(new_password: UserUpdatePassword,
+                         token: str = Body(...),
+                         crud: UserCrud = Depends()):
+    email = verify_password_reset_token(token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = await crud.get_by_email(email=email)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this username does not exist.",
+        )
+    elif not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    result = await crud.reset_password(user, new_password)
+    return result

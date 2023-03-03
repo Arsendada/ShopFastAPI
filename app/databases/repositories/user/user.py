@@ -83,3 +83,19 @@ class UserCrud(BaseCrud):
             return result
         except UnmappedInstanceError:
             return False
+
+    async def reset_password(self, user: UserInDB,
+                             new_password: str) -> bool:
+        new_user_data = user.dict()
+        new_user_data["hashed_password"] = get_password_hash(new_password)
+        stmt = (update(User).
+                where(User.id == user.id).
+                values(**new_user_data.dict()).
+                returning(User))
+        try:
+            result = await self.sess.scalar(stmt)
+            await self.sess.commit()
+            await self.sess.refresh(result)
+            return result
+        except UnmappedInstanceError:
+            return False
