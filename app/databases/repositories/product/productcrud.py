@@ -3,7 +3,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from app.databases.models.product.product import Product, Category
 from app.databases.repositories.base import BaseCrud
 from app.databases.schemas.product.product import ProductModel
-from sqlalchemy import update, select, delete
+from sqlalchemy import update, select
 
 
 
@@ -43,7 +43,7 @@ class ProductCrud(BaseCrud):
         result = await self.sess.scalars(stmt)
         return result.all()
 
-    async def delete_product(self, product_id: int):
+    async def delete_product(self, product_id: int) -> bool:
         product_db = await self.sess.get(Product, product_id)
         if not product_db:
             return False
@@ -53,7 +53,7 @@ class ProductCrud(BaseCrud):
 
     async def update_product(self,
                              product_id: int,
-                             product_model: ProductModel):
+                             product_model: ProductModel) -> bool:
         stmt = (update(Product).
                 where(Product.id == product_id).
                 values(**product_model.dict()).

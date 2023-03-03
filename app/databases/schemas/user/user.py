@@ -1,6 +1,7 @@
 from typing import Optional
 import re
 from pydantic import BaseModel, EmailStr, Field, validator
+from datetime import datetime
 
 
 class UserBase(BaseModel):
@@ -10,13 +11,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(...)
-    password2: str = Field(...)
-    # @validator('password2')
-    # def password_match(cls, v, values, **kwargs):
-    #     if 'password' in values and v != values['password']:
-    #         raise ValueError('passwords do not match')
-    #     return v
-    #
+
     # @validator('password')
     # def password_correct(cls, v):
     #     pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)' \
@@ -40,15 +35,13 @@ class UserBaseInDB(UserBase):
     id: int
 
 
-class UserUpdate(UserCreate):
-    old_password: str = Field(...)
-
-
-class User(UserBaseInDB):
-    pass
+class UserUpdate(BaseModel):
+    username: str
 
 
 class UserInDB(UserBaseInDB):
+    created_at: datetime
+    updated_at: datetime
     hashed_password: str
     is_active: bool
     is_superuser: bool
