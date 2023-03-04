@@ -43,7 +43,7 @@ async def recover_password(email: str,
 
 
 @router.post("/password/change/{token}")
-async def password_change(new_password: str,
+async def password_change(new_password: UserUpdatePassword,
                           token: str,
                           crud: UserCrud = Depends()):
     email = verify_new_token(token)['email']
@@ -57,7 +57,7 @@ async def password_change(new_password: str,
         )
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    result = await crud.password_change(user=user, new_password=new_password)
+    result = await crud.password_change(user=user, new_password=new_password.password)
     return result
 
 

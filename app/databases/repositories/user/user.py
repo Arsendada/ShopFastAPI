@@ -11,7 +11,7 @@ from app.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.security import get_password_hash
 from app.databases.repositories.base import BaseCrud
 from app.databases.models.user.user import User
-from app.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate
+from app.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate, UserUpdatePassword
 
 
 class UserCrud(BaseCrud):
@@ -87,7 +87,6 @@ class UserCrud(BaseCrud):
     async def password_change(self, user: UserInDB,
                              new_password: str) -> bool:
         new_password_hash = get_password_hash(new_password)
-        print(new_password_hash)
         setattr(user, 'hashed_password', new_password_hash)
         self.sess.add(user)
         await self.sess.commit()
