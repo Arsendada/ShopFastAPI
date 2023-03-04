@@ -84,21 +84,15 @@ class UserCrud(BaseCrud):
         except UnmappedInstanceError:
             return False
 
-    async def reset_password(self, user: UserInDB,
+    async def password_change(self, user: UserInDB,
                              new_password: str) -> bool:
-        new_user_data = user.dict()
-        new_user_data["hashed_password"] = get_password_hash(new_password)
-        stmt = (update(User).
-                where(User.id == user.id).
-                values(**new_user_data.dict()).
-                returning(User))
-        try:
-            result = await self.sess.scalar(stmt)
-            await self.sess.commit()
-            await self.sess.refresh(result)
-            return result
-        except UnmappedInstanceError:
-            return False
+        new_password_hash = get_password_hash(new_password)
+        print(new_password_hash)
+        setattr(user, 'hashed_password', new_password_hash)
+        self.sess.add(user)
+        await self.sess.commit()
+        await self.sess.refresh(user)
+        return True
 
     async def activate_user(self, user: UserInDB) -> bool:
         setattr(user, 'is_active', True)

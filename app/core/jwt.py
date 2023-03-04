@@ -20,28 +20,7 @@ def create_access_token(*, data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def generate_password_reset_token(email: str) -> str:
-    """Generate new password reset token"""
-    delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.utcnow()
-    expires = now + delta
-    exp = expires.timestamp()
-    encoded_jwt = await jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email}, settings.SECRET_KEY, algorithm="HS256",
-    )
-    return encoded_jwt
-
-
-async def verify_password_reset_token(token: str) -> Optional[str]:
-    """Verify the password reset token"""
-    try:
-        decoded_token = await jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        return decoded_token["email"]
-    except jwt.JWTError:
-        return None
-
-
-def generate_new_account_token(email: str) -> str:
+def generate_new_token(email: str) -> str:
     """Generate new account token"""
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.utcnow()
@@ -53,10 +32,10 @@ def generate_new_account_token(email: str) -> str:
     return encoded_jwt
 
 
-def verify_new_account_token(token: str) -> Optional[str]:
+def verify_new_token(token: str) -> Optional[str]:
     """Verify the password reset token"""
     try:
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        return decoded_token["email"]
+        return decoded_token
     except jwt.JWTError:
         return None

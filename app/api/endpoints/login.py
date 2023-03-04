@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import Field
 
 from app.api.utils.security import get_current_active_user
 from app.core.email import send_reset_password_email
-from app.core.jwt import generate_password_reset_token, verify_password_reset_token, generate_new_account_token, \
-    verify_new_account_token
+from app.core.jwt import generate_new_token, verify_new_token
 from app.databases.repositories.user.user import UserCrud
 from app.databases.schemas.tokens.tokens import Token
 from app.databases.schemas.user.user import UserInDB, UserUpdatePassword
@@ -35,18 +35,18 @@ async def recover_password(email: str,
             status_code=404,
             detail="The user with this username does not exist in the system.",
         )
-    password_reset_token = generate_password_reset_token(email=email)
+    password_reset_token = generate_new_token(email=email)
     send_reset_password_email(
         email_to=user.email, username=user.username, token=password_reset_token
     )
     return {"msg": "Password recovery email sent"}
 
 
-@router.post("/reset-password/")
-async def reset_password(new_password: UserUpdatePassword,
-                         token: str = Body(...),
-                         crud: UserCrud = Depends()):
-    email = verify_password_reset_token(token)
+@router.post("/password/change/{token}")
+async def password_change(new_password: str,
+                          token: str,
+                          crud: UserCrud = Depends()):
+    email = verify_new_token(token)['email']
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
     user = await crud.get_by_email(email=email)
@@ -57,15 +57,15 @@ async def reset_password(new_password: UserUpdatePassword,
         )
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    result = await crud.reset_password(user, new_password)
+    result = await crud.password_change(user=user, new_password=new_password)
     return result
 
 
 @router.get('/register/{token}')
 async def activate_user(token: str,
                         crud: UserCrud = Depends()):
-    token_payload = verify_new_account_token(token)
-    user = await crud.get_by_email(token_payload)
+    email = verify_new_token(token)['email']
+    user = await crud.get_by_email(email)
     if user:
         await crud.activate_user(user)
         return {"success": True, 'detail': f'User {user.username} has registered by email: {user.email} '}

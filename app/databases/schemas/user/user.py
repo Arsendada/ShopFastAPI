@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class UserUpdatePassword(BaseModel):
-    password: str = Field(...)
+    new_password: str = Field(...)
     # @validator('password')
     # def password_correct(cls, v):
     #     pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)' \
