@@ -46,7 +46,7 @@ async def recover_password(email: str,
 async def password_change(new_password: UserUpdatePassword,
                           token: str,
                           crud: UserCrud = Depends()):
-    email = verify_new_token(token)['email']
+    email = verify_new_token(token).get('email')
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
     user = await crud.get_by_email(email=email)
@@ -64,7 +64,7 @@ async def password_change(new_password: UserUpdatePassword,
 @router.get('/register/{token}')
 async def activate_user(token: str,
                         crud: UserCrud = Depends()):
-    email = verify_new_token(token)['email']
+    email = verify_new_token(token).get('email')
     user = await crud.get_by_email(email)
     if user:
         await crud.activate_user(user)
