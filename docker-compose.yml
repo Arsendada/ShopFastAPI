@@ -1,12 +1,8 @@
 version: '3.11'
 services:
-  test:
-    build:
-      context: ../.
-      dockerfile: Dockerfile
   ####################
   backend:
-    build: ./app
+    build: .
     command: "uvicorn app/main:app --reload"
     restart: always
     ports:
