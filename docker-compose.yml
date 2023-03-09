@@ -1,19 +1,21 @@
-version: '3.11'
+version: '3.10.10'
 services:
   ####################
-  backend:
+  web:
     build: .
-    command: "uvicorn app/main:app --reload"
+    volumes:
+      - ./:/app
+    command: /bin/sh -c 'alembic upgrade head && python -m app'
     restart: always
     ports:
-      - "8000:8000"
+      - "8080:8080"
     networks:
       - app_network
     depends_on:
       - database
   ####################
   database:
-    image: latest
+    image: postgres:latest
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/

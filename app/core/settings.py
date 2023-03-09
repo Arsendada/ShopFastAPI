@@ -17,4 +17,4 @@ EMAILS_ENABLED: bool = False
 EMAIL_TEMPLATES_DIR: str = "app/templates"
 PROJECT_NAME: str = "shop"
 SMTP_TLS: bool = True
-SERVER_HOST = 'http://localhost:8000'
+SERVER_HOST = 'http://127.0.0.1:8080/'
