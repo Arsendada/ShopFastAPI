@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from app.api.utils.security import get_current_active_user
-from app.core.email import send_new_account_email
 from app.core.jwt import generate_new_token
 from app.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate
 from app.databases.repositories.user.user import UserCrud
-
+from app.tasks.tasks import task_send_new_account
 
 router = APIRouter()
 
@@ -15,7 +14,7 @@ async def user_create(user: UserCreate,
                           crud: UserCrud = Depends()):
     result = await crud.create_user(user)
     token = generate_new_token(user.email)
-    send_new_account_email(
+    task_send_new_account.delay(
         email_to=user.email, username=user.username, token=token
     )
     return {'result': result,

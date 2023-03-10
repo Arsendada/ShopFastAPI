@@ -31,7 +31,7 @@ def send_email(
     logging.info(f"send email result: {response}")
 
 
-def send_reset_password_email(email_to: str, username:str, token: str) -> None:
+def send_reset_password_email(email_to: str, username: str, token: str) -> None:
     """Send email for password reset"""
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email_to}"

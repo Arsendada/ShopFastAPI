@@ -28,6 +28,32 @@ services:
     ports:
       - "5432:5432"
   ###################
+  redis:
+    build: .
+    image: redis:alpine
+  ###################
+  celery:
+    build: .
+    working_dir: /app
+    restart: always
+    container_name: celery_worker
+    command: celery -A app.tasks.worker worker -l info
+    depends_on:
+      - redis
+    ##################
+  flower:
+    build: .
+    restart: always
+    container_name: flower
+    working_dir: /app
+    command: bash -c "celery -A app.tasks.worker flower  --address=0.0.0.0 --port=5566 &&
+      celery -A app.tasks.worker flower --broker=redis://guest:guest@localhost:6379/0"
+    ports:
+      - '5566:5566'
+    depends_on:
+      - celery
+      - redis
+  ######################
 volumes:
   postgres_data:
 networks:

@@ -8,6 +8,7 @@ from app.core.jwt import generate_new_token, verify_new_token
 from app.databases.repositories.user.user import UserCrud
 from app.databases.schemas.tokens.tokens import Token
 from app.databases.schemas.user.user import UserInDB, UserUpdatePassword
+from app.tasks.tasks import task_send_password_reset
 
 router = APIRouter()
 
@@ -36,7 +37,7 @@ async def recover_password(email: str,
             detail="The user with this username does not exist in the system.",
         )
     password_reset_token = generate_new_token(email=email)
-    send_reset_password_email(
+    task_send_password_reset(
         email_to=user.email, username=user.username, token=password_reset_token
     )
     return {"msg": "Password recovery email sent"}
