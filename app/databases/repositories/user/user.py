@@ -51,7 +51,7 @@ class UserCrud(BaseCrud):
         if not user or not verify_password(password, user.hashed_password):
             raise HTTPException(
                 status_code=404, detail="Incorrect email or password.")
-        elif not self.is_active(user):
+        elif not await self.is_active(user):
             raise HTTPException(status_code=400, detail="Inactive user")
         access_token_expires = timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

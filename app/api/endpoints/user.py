@@ -4,7 +4,7 @@ from app.api.utils.security import get_current_active_user
 from app.core.jwt import generate_new_token
 from app.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate
 from app.databases.repositories.user.user import UserCrud
-from app.tasks.tasks import task_send_new_account
+from app.tasks.tasks import task_send_new_account, test_celery_start
 
 router = APIRouter()
 
@@ -40,3 +40,11 @@ async def delete_user(user_id: int,
         return False
     result = await crud.delete_user(user_id)
     return result
+
+
+@router.post("/test-celery/", status_code=201)
+def test_celery(
+        value: int
+):
+    test_celery_start.delay(value)
+    return {"msg": f"{value}"}
