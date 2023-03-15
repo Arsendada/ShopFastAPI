@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends
 from app.api.utils.security import get_current_active_user
 from app.core.jwt import generate_new_token
 from app.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate

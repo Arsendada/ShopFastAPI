@@ -8,7 +8,7 @@ from emails.template import JinjaTemplate
 from app.core import settings
 
 
-def send_email(
+async def send_email(
     email_to: str,
     subject_template: str = "",
     html_template: str = "",
@@ -31,7 +31,7 @@ def send_email(
     logging.info(f"send email result: {response}")
 
 
-def send_reset_password_email(email_to: str, username: str, token: str) -> None:
+async def send_reset_password_email(email_to: str, username: str, token: str) -> None:
     """Send email for password reset"""
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email_to}"
@@ -39,7 +39,7 @@ def send_reset_password_email(email_to: str, username: str, token: str) -> None:
         template_str = f.read()
     server_host = settings.SERVER_HOST
     link = f"{server_host}/password/change/{token}"
-    send_email(
+    await send_email(
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
@@ -53,7 +53,7 @@ def send_reset_password_email(email_to: str, username: str, token: str) -> None:
     )
 
 
-def send_new_account_email(email_to: str, username: str, token: str) -> None:
+async def send_new_account_email(email_to: str, username: str, token: str) -> None:
     """Send email for new user account registration"""
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"
@@ -61,7 +61,7 @@ def send_new_account_email(email_to: str, username: str, token: str) -> None:
         template_str = f.read()
     server_host = settings.SERVER_HOST
     link = f"{server_host}/register/{token}"
-    send_email(
+    await send_email(
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
