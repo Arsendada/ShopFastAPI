@@ -28,18 +28,11 @@ services:
     ports:
       - "5432:5432"
   ###################
-  rabbitmq:
-    image: rabbitmq:latest
+  redis:
+    image: redis:latest
     restart: always
-    container_name: rabbitmq_broker
-    volumes:
-      - ./:/app
-    working_dir: /app
     networks:
       - app_network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
   ###################
   celery:
     build: .
@@ -47,44 +40,38 @@ services:
     restart: always
 
     container_name: celery_worker
-    volumes:
-      - ./:/app
     command: celery -A app.tasks.worker worker -l info
     networks:
       - app_network
     depends_on:
-      - rabbitmq
+      - redis
     ##################
   celery-beat:
     build: .
     restart: always
-    volumes:
-      - ./:/app
     working_dir: /app
-    command: celery -A app.tasks.worker beat -l info
+    command: "celery -A app.tasks.worker beat -l info"
     networks:
       - app_network
     depends_on:
-      - rabbitmq
+      - redis
       - celery
-  ######################
   flower:
     build: .
     restart: always
     container_name: flower
-    volumes:
-      - ./:/app
     working_dir: /app
-    command: bash -c "celery -A app.tasks.worker flower  --address=0.0.0.0 --port=5566 && 
-      celery -A app.tasks.worker flower --broker=amqp://rabbitmq:5672"
+    command: >
+      bash -c "celery -A app.tasks.worker flower --port=5566 &&
+      celery -A app.tasks.worker flower --address=0.0.0.0 --port=5566 &&
+      celery -A app.tasks.worker flower --broker=redis://redis:6379"
     networks:
       - app_network
     ports:
       - '5566:5566'
     depends_on:
       - celery
-      - celery-beat
-      - rabbitmq
+      - redis
   ######################
 volumes:
   postgres_data:

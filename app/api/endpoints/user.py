@@ -45,5 +45,5 @@ async def delete_user(user_id: int,
 def test_celery(
         value: int
 ):
-    test_celery_start.delay(value)
-    return {"msg": f"{value}"}
+    task = test_celery_start.delay(value)
+    return {"msg": task.get()}
