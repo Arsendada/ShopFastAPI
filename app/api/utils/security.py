@@ -5,7 +5,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from app.databases.repositories.user.user import UserCrud
 from app.core.jwt import ALGORITHM
-from app.core.settings import SECRET_KEY
+from app.core.settings import settings
 from app.databases.schemas.tokens.tokens import TokenPayload
 from app.databases.schemas.user.user import UserInDB
 
@@ -15,7 +15,7 @@ reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="token")
 async def get_current_user(crud: UserCrud = Depends(),
                           token: str = Depends(reusable_oauth2)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
     except JWTError:
         raise HTTPException(

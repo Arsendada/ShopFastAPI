@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import Field
 
 from app.api.utils.security import get_current_active_user
-from app.core.email import send_reset_password_email
 from app.core.jwt import generate_new_token, verify_new_token
 from app.databases.repositories.user.user import UserCrud
 from app.databases.schemas.tokens.tokens import Token

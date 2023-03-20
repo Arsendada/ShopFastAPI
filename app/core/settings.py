@@ -1,20 +1,49 @@
 import os
-from dotenv import load_dotenv
+from typing import Optional, Dict, Any
 
+from dotenv import load_dotenv
+from pydantic import BaseSettings, validator, PostgresDsn
 
 load_dotenv()
 
 
-DATABASE_URL: str = os.getenv('DATABASE_URL')
-SECRET_KEY: str = os.getenv('SECRET_KEY')
-ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
-SMTP_HOST: str = os.getenv('SMTP_HOST')
-SMTP_USER: str = os.getenv('SMTP_USER')
-SMTP_PASSWORD: str = os.getenv('SMTP_PASSWORD')
-SMTP_PORT: str = os.getenv('SMTP_PORT')
-EMAILS_ENABLED: bool = False
-EMAIL_TEMPLATES_DIR: str = "app/templates"
-PROJECT_NAME: str = "shop"
-SMTP_TLS: bool = True
-SERVER_HOST = 'http://127.0.0.1:8080/'
+class Settings(BaseSettings):
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    SMTP_HOST: str
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    SMTP_PORT: str
+    EMAILS_ENABLED: bool = False
+    EMAIL_TEMPLATES_DIR: str = "app/templates"
+    PROJECT_NAME: str = "shop"
+    SMTP_TLS: bool = True
+    SERVER_HOST = 'http://127.0.0.1:8080/'
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_SERVER: str
+    DATABASE_URL: Optional[PostgresDsn] = None
+
+    @validator("DATABASE_URL", pre=True)
+    def assemble_db_connection(
+            cls,
+            v: Optional[str],
+            values: Dict[str, Any]
+    ) -> Any:
+        if isinstance(v, str):
+            return v
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            user=values.get("POSTGRES_USER"),
+            password=values.get("POSTGRES_PASSWORD"),
+            host=values.get("POSTGRES_SERVER"),
+            path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+
+    class Config:
+        case_sensitive = True
+        env_file = '.env'
+
+settings = Settings()

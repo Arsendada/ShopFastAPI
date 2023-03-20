@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.core.jwt import create_access_token
 from app.core.security import verify_password
-from app.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.settings import settings
 from app.core.security import get_password_hash
 from app.databases.repositories.base import BaseCrud
 from app.databases.models.user.user import User
@@ -54,7 +54,7 @@ class UserCrud(BaseCrud):
         elif not await self.is_active(user):
             raise HTTPException(status_code=400, detail="Inactive user")
         access_token_expires = timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         return {
             "access_token": create_access_token(
                 data={"user_id": user.id},
