@@ -3,7 +3,7 @@ from typing import Optional
 
 from jose import jwt
 
-from app.core import settings
+from app.core.settings import settings
 
 ALGORITHM = "HS256"
 access_token_jwt_subject = "access"

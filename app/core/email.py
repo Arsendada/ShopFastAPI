@@ -5,7 +5,7 @@ from typing import Dict, Any
 import emails
 from emails.template import JinjaTemplate
 
-from app.core import settings
+from app.core.settings import settings
 
 
 async def send_email(

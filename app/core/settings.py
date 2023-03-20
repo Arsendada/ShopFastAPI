@@ -1,4 +1,3 @@
-import os
 from typing import Optional, Dict, Any
 
 from dotenv import load_dotenv
@@ -47,3 +46,5 @@ class Settings(BaseSettings):
         env_file = '.env'
 
 settings = Settings()
+
+print(settings.DATABASE_URL)
