@@ -16,6 +16,7 @@ services:
   ####################
   database:
     image: postgres:latest
+    container_name: postgres_container
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -27,7 +28,7 @@ services:
     networks:
       - app_network
     ports:
-      - "5432:5432"
+      - "5400:5432"
   ###################
   redis:
     image: redis:latest
