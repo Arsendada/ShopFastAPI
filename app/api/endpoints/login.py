@@ -35,7 +35,7 @@ async def recover_password(email: str,
             detail="The user with this username does not exist in the system.",
         )
     password_reset_token = generate_new_token(email=email)
-    task_send_password_reset(
+    task_send_password_reset.delay(
         email_to=user.email, username=user.username, token=password_reset_token
     )
     return {"msg": "Password recovery email sent"}
@@ -64,8 +64,8 @@ async def password_change(new_password: UserUpdatePassword,
 async def activate_user(token: str,
                         crud: UserCrud = Depends()):
     email = verify_new_token(token).get('email')
-    user = await crud.get_by_email(email)
+    user = await crud.get_by_email(email=email)
     if user:
-        await crud.activate_user(user)
+        await crud.activate_user(user=user)
         return {"success": True, 'detail': f'User {user.username} has registered by email: {user.email} '}
     return {'detail': 'Registration time expired'}

@@ -38,7 +38,7 @@ async def send_reset_password_email(email_to: str, username: str, token: str) ->
     with open(Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password.html") as f:
         template_str = f.read()
     server_host = settings.SERVER_HOST
-    link = f"{server_host}/password/change/{token}"
+    link = f"{server_host}password/change/{token}"
     await send_email(
         email_to=email_to,
         subject_template=subject,
@@ -60,7 +60,7 @@ async def send_new_account_email(email_to: str, username: str, token: str) -> No
     with open(Path(settings.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
         template_str = f.read()
     server_host = settings.SERVER_HOST
-    link = f"{server_host}/register/{token}"
+    link = f"{server_host}register/{token}"
     await send_email(
         email_to=email_to,
         subject_template=subject,

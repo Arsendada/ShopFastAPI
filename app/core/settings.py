@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     EMAIL_TEMPLATES_DIR: str = "app/templates"
     PROJECT_NAME: str = "shop"
     SMTP_TLS: bool = True
-    SERVER_HOST = 'http://127.0.0.1:8080/'
+    SERVER_HOST: str
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
@@ -47,4 +47,3 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-print(settings.DATABASE_URL)
