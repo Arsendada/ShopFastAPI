@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from app.api.utils.security import get_current_active_user
-from app.core.jwt import generate_new_token
+from app.services.security.permissions import get_current_active_user
+from app.services.security.jwt import generate_new_token
 from app.services.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate
 from app.services.databases.repositories.user.user import UserCrud
 from app.services.tasks.tasks import task_send_new_account, test_celery_start

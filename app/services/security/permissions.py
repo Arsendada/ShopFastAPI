@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_403_FORBIDDEN
 
 from app.services.databases.repositories.user.user import UserCrud
-from app.core.jwt import ALGORITHM
+from app.services.security.jwt import ALGORITHM
 from app.core.settings import settings
 from app.services.databases.schemas.tokens.tokens import TokenPayload
 from app.services.databases.schemas.user.user import UserInDB

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.utils.security import get_current_active_user
-from app.core.jwt import generate_new_token, verify_new_token
+from app.services.security.permissions import get_current_active_user
+from app.services.security.jwt import generate_new_token, verify_new_token
 from app.services.databases.repositories.user.user import UserCrud
 from app.services.databases.schemas.tokens.tokens import Token
 from app.services.databases.schemas.user.user import UserInDB, UserUpdatePassword

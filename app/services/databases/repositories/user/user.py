@@ -5,10 +5,10 @@ from fastapi import HTTPException
 from sqlalchemy import select, update
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from app.core.jwt import create_access_token
-from app.core.security import verify_password
+from app.services.security.jwt import create_access_token
+from app.services.security.password_security import verify_password
 from app.core.settings import settings
-from app.core.security import get_password_hash
+from app.services.security.password_security import get_password_hash
 from app.services.databases.repositories.base import BaseCrud
 from app.services.databases.models.user.user import User
 from app.services.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate
