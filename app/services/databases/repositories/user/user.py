@@ -9,9 +9,9 @@ from app.core.jwt import create_access_token
 from app.core.security import verify_password
 from app.core.settings import settings
 from app.core.security import get_password_hash
-from app.databases.repositories.base import BaseCrud
-from app.databases.models.user.user import User
-from app.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate, UserUpdatePassword
+from app.services.databases.repositories.base import BaseCrud
+from app.services.databases.models.user.user import User
+from app.services.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate
 
 
 class UserCrud(BaseCrud):

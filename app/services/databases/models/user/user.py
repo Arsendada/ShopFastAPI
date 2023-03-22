@@ -1,10 +1,9 @@
-import datetime
 from sqlalchemy import Boolean, Integer
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
-from app.databases.models.base import Base
+from app.services.databases.models.base import Base
 
 
 class User(Base):

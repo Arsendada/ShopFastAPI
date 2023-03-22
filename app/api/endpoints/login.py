@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.utils.security import get_current_active_user
 from app.core.jwt import generate_new_token, verify_new_token
-from app.databases.repositories.user.user import UserCrud
-from app.databases.schemas.tokens.tokens import Token
-from app.databases.schemas.user.user import UserInDB, UserUpdatePassword
+from app.services.databases.repositories.user.user import UserCrud
+from app.services.databases.schemas.tokens.tokens import Token
+from app.services.databases.schemas.user.user import UserInDB, UserUpdatePassword
 from app.tasks.tasks import task_send_password_reset
 
 router = APIRouter()

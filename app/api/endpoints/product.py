@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.databases.schemas.product.product import ProductModel
-from app.databases.repositories.product.productcrud import ProductCrud
+from app.services.databases.schemas.product.product import ProductModel
+from app.services.databases.repositories.product.productcrud import ProductCrud
 
 
 router = APIRouter()

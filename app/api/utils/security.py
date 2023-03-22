@@ -1,13 +1,13 @@
 from jose import jwt, JWTError
-from fastapi import Depends, HTTPException, Security
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_403_FORBIDDEN
 
-from app.databases.repositories.user.user import UserCrud
+from app.services.databases.repositories.user.user import UserCrud
 from app.core.jwt import ALGORITHM
 from app.core.settings import settings
-from app.databases.schemas.tokens.tokens import TokenPayload
-from app.databases.schemas.user.user import UserInDB
+from app.services.databases.schemas.tokens.tokens import TokenPayload
+from app.services.databases.schemas.user.user import UserInDB
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="token")
 
