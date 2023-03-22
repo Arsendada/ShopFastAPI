@@ -6,7 +6,7 @@ from app.core.jwt import generate_new_token, verify_new_token
 from app.services.databases.repositories.user.user import UserCrud
 from app.services.databases.schemas.tokens.tokens import Token
 from app.services.databases.schemas.user.user import UserInDB, UserUpdatePassword
-from app.tasks.tasks import task_send_password_reset
+from app.services.tasks.tasks import task_send_password_reset
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 import asyncio
 
 from app.core.email import send_reset_password_email, send_new_account_email
-from app.tasks.worker import celery_app
+from app.services.tasks.worker import celery_app
 
 
 @celery_app.task(name="send_email_register")

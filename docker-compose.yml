@@ -42,7 +42,7 @@ services:
     restart: always
 
     container_name: celery_worker
-    command: celery -A app.tasks.worker worker -l info
+    command: celery -A app.services.tasks.worker worker -l info
     networks:
       - app_network
     depends_on:
@@ -52,7 +52,7 @@ services:
     build: .
     restart: always
     working_dir: /app
-    command: "celery -A app.tasks.worker beat -l info"
+    command: "celery -A app.services.tasks.worker beat -l info"
     networks:
       - app_network
     depends_on:
@@ -64,9 +64,9 @@ services:
     container_name: flower
     working_dir: /app
     command: >
-      bash -c "celery -A app.tasks.worker flower --port=5566 &&
-      celery -A app.tasks.worker flower --address=0.0.0.0 --port=5566 &&
-      celery -A app.tasks.worker flower --broker=redis://redis:6379"
+      bash -c "celery -A app.services.tasks.worker flower --port=5566 &&
+      celery -A app.services.tasks.worker flower --address=0.0.0.0 --port=5566 &&
+      celery -A app.services.tasks.worker flower --broker=redis://redis:6379"
     networks:
       - app_network
     ports:
