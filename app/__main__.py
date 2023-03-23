@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.endpoints import category, product, user, login
+from app.api.v1 import api_router
 from app.gunicorn_app import StandaloneApplication
 
 
@@ -9,21 +9,10 @@ app = FastAPI()
 
 
 
-app.include_router(category.router,
-                   prefix='/category',
-                   tags=['Category'])
-
-app.include_router(product.router,
-                   prefix='/product',
-                   tags=['Product'])
+app.include_router(api_router.router,
+                   prefix='/api/v1')
 
 
-app.include_router(user.router,
-                   prefix='/user',
-                   tags=['User'])
-
-app.include_router(login.router,
-                   tags=['Login'])
 
 
 def run_application(app, ) -> None:
