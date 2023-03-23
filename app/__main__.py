@@ -7,12 +7,8 @@ from app.gunicorn_app import StandaloneApplication
 app = FastAPI()
 
 
-
-
 app.include_router(api_router.router,
                    prefix='/api/v1')
-
-
 
 
 def run_application(app, ) -> None:

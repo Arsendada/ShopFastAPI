@@ -1,10 +1,9 @@
 import logging
 from pathlib import Path
 from typing import Dict, Any
-
 import emails
-from emails.template import JinjaTemplate
 
+from emails.template import JinjaTemplate
 from app.core.settings import settings
 
 
@@ -20,18 +19,25 @@ async def send_email(
         html=JinjaTemplate(html_template),
         mail_from=(settings.SMTP_USER, settings.SMTP_USER),
     )
-    smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
+    smtp_options = {"host": settings.SMTP_HOST,
+                    "port": settings.SMTP_PORT}
     if settings.SMTP_TLS:
         smtp_options["tls"] = True
     if settings.SMTP_USER:
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-    response = message.send(to=email_to, render=environment, smtp=smtp_options)
+    response = message.send(to=email_to,
+                            render=environment,
+                            smtp=smtp_options)
     logging.info(f"send email result: {response}")
 
 
-async def send_reset_password_email(email_to: str, username: str, token: str) -> None:
+async def send_reset_password_email(
+        email_to: str,
+        username: str,
+        token: str
+) -> None:
     """Send email for password reset"""
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email_to}"
@@ -53,7 +59,11 @@ async def send_reset_password_email(email_to: str, username: str, token: str) ->
     )
 
 
-async def send_new_account_email(email_to: str, username: str, token: str) -> None:
+async def send_new_account_email(
+        email_to: str,
+        username: str,
+        token: str
+) -> None:
     """Send email for new user account registration"""
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"

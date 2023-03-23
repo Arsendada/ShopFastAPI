@@ -15,6 +15,7 @@ class UserUpdatePassword(BaseModel):
     #         raise ValueError('Password has incorrect format.')
     #     return v
 
+
 class UserBase(BaseModel):
     email: EmailStr = Field(...)
     username: str = Field(...)

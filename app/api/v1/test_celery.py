@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.services.tasks.tasks import test_celery_start
 
 

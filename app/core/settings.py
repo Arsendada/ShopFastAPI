@@ -1,5 +1,4 @@
 from typing import Optional, Dict, Any
-
 from dotenv import load_dotenv
 from pydantic import BaseSettings, validator, PostgresDsn
 
@@ -45,5 +44,5 @@ class Settings(BaseSettings):
         case_sensitive = True
         env_file = '.env'
 
-settings = Settings()
 
+settings = Settings()
