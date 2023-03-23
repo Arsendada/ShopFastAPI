@@ -3,7 +3,7 @@ from app.services.security.permissions import get_current_active_user
 from app.services.security.jwt import generate_new_token
 from app.services.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate
 from app.services.databases.repositories.user.user import UserCrud
-from app.services.tasks.tasks import task_send_new_account, test_celery_start
+from app.services.tasks.tasks import task_send_new_account
 
 router = APIRouter()
 
@@ -41,9 +41,3 @@ async def delete_user(user_id: int,
     return result
 
 
-@router.post("/test-celery/", status_code=201)
-def test_celery(
-        value: int
-):
-    task = test_celery_start.delay(value)
-    return {"msg": task.get()}
