@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.services.databases.repositories.product.categorycrud import CategoryCrud
-from app.services.databases.schemas.product.category import CategoryModel
+from app.services.databases.repositories.category.categorycrud import CategoryCrud
+from app.services.databases.schemas.category.category import CategoryModel
 
 router = APIRouter()
 

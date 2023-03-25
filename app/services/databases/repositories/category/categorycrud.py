@@ -2,7 +2,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.services.databases.models.product.product import Category
 from app.services.databases.repositories.base import BaseCrud
-from app.services.databases.schemas.product.category import CategoryModel
+from app.services.databases.schemas.category.category import CategoryModel
 from sqlalchemy import update, select
 
 
