@@ -5,8 +5,11 @@ from app.api.v1.product import product
 from app.api.v1.user import user
 from app.api.v1.login import login
 from app.api.v1 import test_celery
+from app.api.v1.cart import cart
+
 
 router = APIRouter()
+
 
 router.include_router(category.router,
                       prefix='/category',
@@ -25,3 +28,7 @@ router.include_router(login.router,
 
 router.include_router(test_celery.router,
                       tags=['Test_celery'])
+
+router.include_router(cart.router,
+                      prefix='/cart',
+                      tags=['Cart'])

@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_SERVER: str
     DATABASE_URL: Optional[PostgresDsn] = None
+    SECRET_MIDDLEWARY: str
 
     @validator("DATABASE_URL", pre=True)
     def assemble_db_connection(
