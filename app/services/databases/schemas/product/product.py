@@ -2,7 +2,6 @@ from pydantic import BaseModel, condecimal
 
 
 class ProductModel(BaseModel):
-    id: int
     name: str
     category_id: int
     price: condecimal(max_digits=10, decimal_places=2)

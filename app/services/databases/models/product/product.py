@@ -25,7 +25,6 @@ class Product(Base):
 
     category = relationship('Category', back_populates="products", lazy=True)
     comments = relationship('Comment', back_populates="products", lazy=True)
-    items = relationship('Items', back_populates="product", lazy=True)
 
 
 class Comment(Base):

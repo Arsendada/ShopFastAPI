@@ -17,6 +17,7 @@ class ItemCrud(BaseCrud):
                         order_id=order_id,
                         product_id=product_id)
 
-        await self.sess.add(new_item)
+        self.sess.add(new_item)
+        await self.sess.commit()
         await self.sess.refresh(new_item)
         return True

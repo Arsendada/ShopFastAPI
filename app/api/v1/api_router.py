@@ -6,6 +6,7 @@ from app.api.v1.user import user
 from app.api.v1.login import login
 from app.api.v1 import test_celery
 from app.api.v1.cart import cart
+from app.api.v1.order import order
 
 
 router = APIRouter()
@@ -32,3 +33,7 @@ router.include_router(test_celery.router,
 router.include_router(cart.router,
                       prefix='/cart',
                       tags=['Cart'])
+
+router.include_router(order.router,
+                      prefix='/cart',
+                      tags=['Order'])
