@@ -34,5 +34,5 @@ class OrderCrud(BaseCrud):
 
     async def get_by_email(self, email):
         stmt = (select(Order).where(Order.email == email))
-        result = await self.sess.execute(stmt)
-        return result.scalar()
+        result = await self.sess.scalars(stmt)
+        return result.all()

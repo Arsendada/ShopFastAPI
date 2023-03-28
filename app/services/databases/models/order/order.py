@@ -22,7 +22,7 @@ class Item(Base):
     __tablename__ = 'item'
 
     id = Column(Integer, primary_key=True)
-    name = Column(VARCHAR(255), unique=True, index=True)
+    name = Column(VARCHAR(255))
     price = Column(Numeric(precision=8))
     quantity = Column(Integer)
 

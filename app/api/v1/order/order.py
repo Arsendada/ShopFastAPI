@@ -5,6 +5,7 @@ from app.services.cart.cart import Cart
 from app.services.databases.repositories.order.item import ItemCrud
 from app.services.databases.repositories.order.order import OrderCrud
 from app.services.databases.schemas.order.order import OrderModel
+from app.services.security.permissions import get_current_active_superuser, get_current_active_user
 
 
 router = APIRouter()
@@ -36,3 +37,31 @@ async def add_order(
 
     return {'total_price': total_price, 'order': result_order}
 
+
+@router.get('/get_order/{order_id}')
+async def get_order_by_id(
+        order_id: int,
+        order_crud: OrderCrud = Depends()
+):
+    order = await order_crud.get_detail_order(order_id)
+    if order:
+        return order
+    return {'message': 'order does not exist'}
+
+
+@router.get('/list/{offset}/{limit}')
+async def get_list_order(
+        offset: int,
+        limit: int,
+        order_crud: OrderCrud = Depends()
+):
+    order_crud.get_list_order(offset=offset, limit=limit)
+
+
+@router.get('/user_order')
+async def get_user_order(email: str,
+                         order_crud: OrderCrud = Depends()):
+    result = await order_crud.get_by_email(email=email)
+    if result:
+        return result
+    return {'message': 'This user has not made any purchases'}

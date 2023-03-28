@@ -35,5 +35,5 @@ router.include_router(cart.router,
                       tags=['Cart'])
 
 router.include_router(order.router,
-                      prefix='/cart',
+                      prefix='/order',
                       tags=['Order'])
