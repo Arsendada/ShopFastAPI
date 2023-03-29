@@ -51,11 +51,12 @@ async def get_order_by_id(
 
 @router.get('/list/{offset}/{limit}')
 async def get_list_order(
-        offset: int,
-        limit: int,
+        offset: int = 0,
+        limit: int = 10,
         order_crud: OrderCrud = Depends()
 ):
-    order_crud.get_list_order(offset=offset, limit=limit)
+    result = await order_crud.get_list_order(offset=offset, limit=limit)
+    return result
 
 
 @router.get('/user_order')
