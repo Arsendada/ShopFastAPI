@@ -125,3 +125,16 @@ class UserCrud(BaseCrud):
         await self.sess.commit()
         await self.sess.refresh(user)
         return True
+
+    async def get_list_user(
+            self,
+            offset: int = 0,
+            limit: int = 20
+    ):
+        stmt = (
+            select(User).
+            offset(offset).
+            limit(limit)
+        )
+        result = await self.sess.scalars(stmt)
+        return result.all()
