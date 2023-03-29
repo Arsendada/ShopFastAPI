@@ -30,9 +30,9 @@ class OrderCrud(BaseCrud):
             limit(limit)
         )
         result = await self.sess.scalars(stmt)
-        return result.all()
+        return result.unique().all()
 
-    async def get_by_email(self, email):
+    async def get_by_email(self, email: str):
         stmt = (select(Order).where(Order.email == email))
         result = await self.sess.scalars(stmt)
-        return result.all()
+        return result.unique().all()
