@@ -8,9 +8,10 @@ from sqlalchemy import update, select
 
 class CategoryCrud(BaseCrud):
 
-    async def add_category(self,
-                           req: CategoryModel
-                           ):
+    async def add_category(
+            self,
+            req: CategoryModel
+    ):
         new_category = Category(**req.dict())
         self.sess.add(new_category)
         await self.sess.commit()
@@ -22,9 +23,10 @@ class CategoryCrud(BaseCrud):
         result = await self.sess.scalars(all_category)
         return result.all()
 
-    async def delete_category(self,
-                              cat_id: int
-                              ):
+    async def delete_category(
+            self,
+            cat_id: int
+    ):
         category_db = await self.sess.get(Category, cat_id)
         if not category_db:
             return False
@@ -32,16 +34,18 @@ class CategoryCrud(BaseCrud):
         await self.sess.commit()
         return True
 
-    async def get_category_by_id(self,
-                                 cat_id: int
-                                 ):
+    async def get_category_by_id(
+            self,
+            cat_id: int
+    ):
 
         return await self.sess.get(Category, cat_id)
 
-    async def update_category_by_id(self,
-                                    cat_id: int,
-                                    data: CategoryModel
-                                    ):
+    async def update_category_by_id(
+            self,
+            cat_id: int,
+            data: CategoryModel
+    ):
         stmt = (
             update(Category).
             where(Category.id == cat_id).

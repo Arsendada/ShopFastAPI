@@ -10,7 +10,7 @@ from app.services.databases.schemas.tokens.tokens import TokenPayload
 from app.services.databases.schemas.user.user import UserInDB
 
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="token")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 async def get_current_user(
