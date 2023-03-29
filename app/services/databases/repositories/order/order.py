@@ -16,7 +16,7 @@ class OrderCrud(BaseCrud):
         await self.sess.refresh(new_order)
         return new_order
 
-    async def get_detail_order(self, order_id):
+    async def get_detail_order(self, order_id: int):
         result = await self.sess.get(Order, order_id)
         return result
 

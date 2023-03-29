@@ -15,7 +15,7 @@ class Order(Base):
     country = Column(String, nullable=False)
     telephone = Column(String, nullable=False)
 
-    items = relationship('Item', back_populates='order')
+    items = relationship('Item', back_populates='order', lazy=False)
 
 
 class Item(Base):
@@ -29,5 +29,5 @@ class Item(Base):
     order_id = Column(Integer, ForeignKey('order.id', ondelete="CASCADE"), nullable=False)
     product_id = Column(Integer, ForeignKey('product.id', ondelete="CASCADE"), nullable=False)
 
-    order = relationship('Order', back_populates="items")
+    order = relationship('Order', back_populates="items", lazy=False)
 
