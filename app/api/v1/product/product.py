@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.services.databases.schemas.product.product import ProductModel
 from app.services.databases.repositories.product.productcrud import ProductCrud
-
+from app.services.security.permissions import get_current_active_superuser
 
 router = APIRouter()
 
 
-@router.post('/create')
-async def product_create(
+@router.post('/create', dependencies=[Depends(get_current_active_superuser)])
+async def create_product(
         req: ProductModel,
         crud: ProductCrud = Depends()
 ):
@@ -50,7 +50,7 @@ async def get_all_product_by_category(
     return 'Product does not exist'
 
 
-@router.delete('/delete/{product_id}')
+@router.delete('/delete/{product_id}', dependencies=[Depends(get_current_active_superuser)])
 async def delete_product(
         product_id: int,
         crud: ProductCrud = Depends()
@@ -61,7 +61,7 @@ async def delete_product(
     return False
 
 
-@router.patch('/update/{product_id}')
+@router.patch('/update/{product_id}', dependencies=[Depends(get_current_active_superuser)])
 async def update_product(
         product_id: int,
         product_model: ProductModel,

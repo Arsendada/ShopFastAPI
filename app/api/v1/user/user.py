@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.services.security.permissions import get_current_active_user
+from app.services.security.permissions import get_current_active_user, get_current_active_superuser
 from app.services.security.jwt import generate_new_token
 from app.services.databases.schemas.user.user import UserCreate, UserInDB, UserUpdate
 from app.services.databases.repositories.user.user import UserCrud
@@ -33,8 +33,8 @@ async def update_user(
         current_user: UserInDB = Depends(get_current_active_user),
         crud: UserCrud = Depends()
 ):
-    if current_user.id != user_id:
-        return False
+    if not (current_user.id == user_id or current_user.is_superuser):
+        return {'messages': 'The user does not have rights or is not an admin'}
     result = await crud.update_user(user_id,
                                     data)
     return result
@@ -46,13 +46,13 @@ async def delete_user(
         current_user: UserInDB = Depends(get_current_active_user),
         crud: UserCrud = Depends()
 ) -> bool:
-    if current_user.id != user_id:
-        return False
+    if not (current_user.id == user_id or current_user.is_superuser):
+        return {'messages': 'The user does not have rights or is not an admin'}
     result = await crud.delete_user(user_id)
     return result
 
 
-@router.get('/list/{offset}/{limit}')
+@router.get('/list/{offset}/{limit}', dependencies=[Depends(get_current_active_superuser)])
 async def get_list_user(
         offset: int = 0,
         limit: int = 10,

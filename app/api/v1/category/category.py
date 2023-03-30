@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.services.databases.repositories.category.categorycrud import CategoryCrud
 from app.services.databases.schemas.category.category import CategoryModel
+from app.services.security.permissions import get_current_active_superuser
 
 router = APIRouter()
 
 
-@router.post('/create')
+@router.post('/create', dependencies=[Depends(get_current_active_superuser)])
 async def category_create(
         req: CategoryModel,
         crud: CategoryCrud = Depends()
@@ -23,7 +24,7 @@ async def get_category_list(
     return result
 
 
-@router.delete('/delete/{cat_id}')
+@router.delete('/delete/{cat_id}', dependencies=[Depends(get_current_active_superuser)])
 async def delete_category(
         cat_id: int,
         crud: CategoryCrud = Depends()
@@ -45,7 +46,7 @@ async def get_category(
     raise HTTPException(404, 'Category not found')
 
 
-@router.patch('/update/{id}')
+@router.patch('/update/{id}', dependencies=[Depends(get_current_active_superuser)])
 async def update_category(
         cat_id: int, cat_model: CategoryModel,
         crud: CategoryCrud = Depends()

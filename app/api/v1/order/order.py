@@ -38,7 +38,7 @@ async def add_order(
     return {'total_price': total_price, 'order': result_order}
 
 
-@router.get('/get_order/{order_id}')
+@router.get('/get_order/{order_id}', dependencies=[Depends(get_current_active_superuser)])
 async def get_order_by_id(
         order_id: int,
         order_crud: OrderCrud = Depends()
@@ -49,7 +49,7 @@ async def get_order_by_id(
     return {'message': 'order does not exist'}
 
 
-@router.get('/list/{offset}/{limit}')
+@router.get('/list/{offset}/{limit}', dependencies=[Depends(get_current_active_superuser)])
 async def get_list_order(
         offset: int = 0,
         limit: int = 10,
@@ -59,7 +59,7 @@ async def get_list_order(
     return result
 
 
-@router.get('/user_order')
+@router.get('/user_order', dependencies=[Depends(get_current_active_superuser)])
 async def get_user_order(email: str,
                          order_crud: OrderCrud = Depends()):
     result = await order_crud.get_by_email(email=email)
