@@ -26,10 +26,10 @@ async def get_category_list(
 
 @router.delete('/delete/{cat_id}', dependencies=[Depends(get_current_active_superuser)])
 async def delete_category(
-        cat_id: int,
+        category_id: int,
         crud: CategoryCrud = Depends()
 ):
-    result = await crud.delete_category(cat_id)
+    result = await crud.delete_category(category_id=category_id)
     if result:
         return True
     return False

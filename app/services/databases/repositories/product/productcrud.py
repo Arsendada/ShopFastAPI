@@ -7,29 +7,31 @@ from sqlalchemy import update, select
 
 
 class ProductCrud(BaseCrud):
+
+    model = Product
+
     async def add_product(self,
-                          req: ProductModel
+                          data: ProductModel
                           ):
-        category_id = await self.sess.get(Category,
-                                          req.category_id)
+        category_id = await self._get(model_email=data.category_id)
+
         if not category_id:
-            return f'Missing category with id {req.category_id}'
-        new_product = Product(**req.dict())
-        self.sess.add(new_product)
-        await self.sess.commit()
-        await self.sess.refresh(new_product)
+            return f'Missing category with id {data.category_id}'
+        new_product = Product(**data.dict())
+        self.session.add(new_product)
+        await self.session.commit()
+        await self.session.refresh(new_product)
         return new_product
 
     async def get_product(self,
                           product_id
                           ):
-        result = await self.sess.get(Product,
-                                     product_id)
+        result = await self._get(model_id=product_id)
 
         if result:
             return result
 
-        return f'Product does not exist'
+        return {'message': 'Product does not exist'}
 
     async def get_all_product(self,
                               offset: int = 0,
@@ -40,7 +42,7 @@ class ProductCrud(BaseCrud):
             offset(offset).
             limit(limit)
         )
-        result = await self.sess.scalars(stmt)
+        result = await self.session.scalars(stmt)
         return result.all()
 
     async def get_all_product_by_category(
@@ -55,17 +57,17 @@ class ProductCrud(BaseCrud):
             offset(offset).
             limit(limit)
         )
-        result = await self.sess.scalars(stmt)
+        result = await self.session.scalars(stmt)
         return result.all()
 
     async def delete_product(self,
                              product_id: int
                              ) -> bool:
-        product_db = await self.sess.get(Product, product_id)
+        product_db = await self._get(model_id=product_id)
         if not product_db:
             return False
-        await self.sess.delete(product_db)
-        await self.sess.commit()
+        await self.session.delete(product_db)
+        await self.session.commit()
         return True
 
     async def update_product(self,
@@ -79,9 +81,9 @@ class ProductCrud(BaseCrud):
         )
 
         try:
-            result = await self.sess.scalar(stmt)
-            await self.sess.commit()
-            await self.sess.refresh(result)
+            result = await self.session.scalar(stmt)
+            await self.session.commit()
+            await self.session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False

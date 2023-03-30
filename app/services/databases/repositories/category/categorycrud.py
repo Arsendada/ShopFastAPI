@@ -8,30 +8,32 @@ from sqlalchemy import update, select
 
 class CategoryCrud(BaseCrud):
 
+    model = Category
+
     async def add_category(
             self,
             req: CategoryModel
     ):
         new_category = Category(**req.dict())
-        self.sess.add(new_category)
-        await self.sess.commit()
-        await self.sess.refresh(new_category)
+        self.session.add(new_category)
+        await self.session.commit()
+        await self.session.refresh(new_category)
         return new_category
 
     async def get_all_category(self) -> list[Category]:
         all_category = select(Category)
-        result = await self.sess.scalars(all_category)
+        result = await self.session.scalars(all_category)
         return result.all()
 
     async def delete_category(
             self,
-            cat_id: int
+            category_id: int
     ):
-        category_db = await self.sess.get(Category, cat_id)
+        category_db = await self._get(model_id=category_id)
         if not category_db:
             return False
-        await self.sess.delete(category_db)
-        await self.sess.commit()
+        await self.session.delete(category_db)
+        await self.session.commit()
         return True
 
     async def get_category_by_id(
@@ -39,7 +41,7 @@ class CategoryCrud(BaseCrud):
             cat_id: int
     ):
 
-        return await self.sess.get(Category, cat_id)
+        return await self._get(model_id=cat_id)
 
     async def update_category_by_id(
             self,
@@ -53,9 +55,9 @@ class CategoryCrud(BaseCrud):
             returning(Category)
         )
         try:
-            result = await self.sess.scalar(stmt)
-            await self.sess.commit()
-            await self.sess.refresh(result)
+            result = await self.session.scalar(stmt)
+            await self.session.commit()
+            await self.session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False

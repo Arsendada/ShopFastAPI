@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import Optional
 from fastapi import HTTPException
+from pydantic import EmailStr
 from sqlalchemy import select, update
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -15,19 +16,19 @@ from app.services.databases.schemas.user.user import UserInDB, UserCreate, UserU
 
 class UserCrud(BaseCrud):
 
+    model = User
+
     async def get(self,
                   user_id: int
                   ) -> Optional[UserInDB]:
-        result = await self.sess.get(User, user_id)
-        print(result)
+        result = await self._get(model_id=user_id)
         return result
 
     async def get_by_email(self,
-                           email: str
+                           email: EmailStr
                            ):
-        stmt = (select(User).where(User.email == email))
-        result = await self.sess.execute(stmt)
-        return result.scalar()
+        result = await self._get(model_email=email)
+        return result
 
     async def is_active(self,
                         user: UserInDB
@@ -50,9 +51,9 @@ class UserCrud(BaseCrud):
         password = new_user_data.pop('password')
         new_user_data["hashed_password"] = get_password_hash(password)
         result = User(**new_user_data)
-        self.sess.add(result)
-        await self.sess.commit()
-        await self.sess.refresh(result)
+        self.session.add(result)
+        await self.session.commit()
+        await self.session.refresh(result)
         return result
 
     async def authenticate(self,
@@ -81,11 +82,11 @@ class UserCrud(BaseCrud):
 
     async def delete_user(self,
                           user_id: int) -> bool:
-        user = await self.get(user_id)
+        user = await self._get(model_id=user_id)
         if not user:
             return False
-        await self.sess.delete(user)
-        await self.sess.commit()
+        await self.session.delete(user)
+        await self.session.commit()
         return True
 
     async def update_user(self,
@@ -99,9 +100,9 @@ class UserCrud(BaseCrud):
             returning(User)
         )
         try:
-            result = await self.sess.scalar(stmt)
-            await self.sess.commit()
-            await self.sess.refresh(result)
+            result = await self.session.scalar(stmt)
+            await self.session.commit()
+            await self.session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False
@@ -112,18 +113,18 @@ class UserCrud(BaseCrud):
                               ) -> bool:
         new_password_hash = get_password_hash(new_password)
         setattr(user, 'hashed_password', new_password_hash)
-        self.sess.add(user)
-        await self.sess.commit()
-        await self.sess.refresh(user)
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
         return True
 
     async def activate_user(self,
                             user: UserInDB
                             ) -> bool:
         setattr(user, 'is_active', True)
-        self.sess.add(user)
-        await self.sess.commit()
-        await self.sess.refresh(user)
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
         return True
 
     async def get_list_user(
@@ -136,5 +137,5 @@ class UserCrud(BaseCrud):
             offset(offset).
             limit(limit)
         )
-        result = await self.sess.scalars(stmt)
+        result = await self.session.scalars(stmt)
         return result.all()
