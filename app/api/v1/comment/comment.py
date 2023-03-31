@@ -42,17 +42,25 @@ async def get_list_comment(
         limit: int = 10,
         crud: CommentCrud = Depends()
 ):
-    result = await crud.get_list_comment(offset=offset, limit=limit)
+    result = await crud.get_list_comment(
+        offset=offset,
+        limit=limit
+    )
     return result
 
 
-@router.get('/get_by_user_id')
-async def get_comment_by_user_id(
+@router.get('/get_user_comment')
+async def get_user_comment(
         user_id: int,
+        offset: int = 0,
+        limit: int = 20,
         user: UserInDB = Depends(get_current_active_user),
         crud: CommentCrud = Depends()
 ):
     if not (user.id == user_id or user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
-    result = await crud.get_by_user_id(user_id=user_id)
+    result = await crud.get_user_comment(
+        offset=offset,
+        limit=limit,
+        value=user_id)
     return result

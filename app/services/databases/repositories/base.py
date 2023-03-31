@@ -1,36 +1,67 @@
-import typing
-
+from typing import Optional, List, TypeVar, Type, ClassVar, Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 
 from app.core.session import get_session
 
-
-Model = typing.TypeVar("Model")
+Model = TypeVar("Model")
 
 
 class BaseCrud:
-
-    model: typing.ClassVar[typing.Type[Model]]
+    model: ClassVar[Type[Model]]
 
     def __init__(self, db: AsyncSession = Depends(get_session)):
-        self.session = db
+        self._session = db
+
+    @classmethod
+    async def _check_unique(
+            cls,
+            result,
+            unique: bool = False
+    ) -> Optional[List[Model]]:
+        if unique:
+            return result.unique().all()
+        return result.all()
 
     async def _get(
             self,
-            model_id: int = None,
-            model_email: str = None,
-    ) -> typing.Optional[Model]:
+            field: Any,
+            value: Any,
+    ) -> Optional[Model]:
 
-        if model_id:
-            return await self.session.get(self.model, model_id)
+        stmt = (
+            select(self.model)
+            .where(field == value)
+        )
 
-        if model_email:
+        result = await self._session.scalar(stmt)
+        return result
+
+    async def _get_list(
+            self,
+            limit: int,
+            offset: int,
+            field: Any = None,
+            value: Any = None,
+            unique: bool = False
+    ) -> Optional[List[Model]]:
+
+        if field and value:
             stmt = (
                 select(self.model)
-                .where(self.model.email == model_email)
+                .where(field == value)
+                .offset(offset)
+                .limit(limit)
             )
-            result = await self.session.scalar(stmt)
-            return result
-
+        else:
+            stmt = (
+                select(self.model)
+                .offset(offset)
+                .limit(limit)
+            )
+        result = await self._session.scalars(stmt)
+        return await self._check_unique(
+            result=result,
+            unique=unique
+        )

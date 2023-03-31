@@ -18,31 +18,40 @@ class UserCrud(BaseCrud):
 
     model = User
 
-    async def get(self,
-                  user_id: int
-                  ) -> Optional[UserInDB]:
-        result = await self._get(model_id=user_id)
+    async def get(
+            self,
+            user_id: int
+    ) -> Optional[UserInDB]:
+        result = await self._get(
+            field=self.model.id,
+            value=user_id
+        )
         return result
 
-    async def get_by_email(self,
-                           email: EmailStr
-                           ):
-        result = await self._get(model_email=email)
+    async def get_by_email(
+            self,
+            email: EmailStr
+    ):
+        result = await self._get(
+            field=self.model.email,
+            value=email
+        )
         return result
 
-    async def is_active(self,
-                        user: UserInDB
-                        ) -> bool:
-        return user.is_active
+    async def get_list_user(
+            self,
+            offset: int = 0,
+            limit: int = 20
+    ):
+        return await self._get_list(
+            limit=limit,
+            offset=offset
+        )
 
-    async def is_superuser(self,
-                           user: UserInDB
-                           ) -> bool:
-        return user.is_superuser
-
-    async def create_user(self,
-                          user: UserCreate
-                          ) -> UserInDB:
+    async def create_user(
+            self,
+            user: UserCreate
+    ) -> UserInDB:
         check_email = await self.get_by_email(email=user.email)
         if check_email:
             raise HTTPException(status_code=404,
@@ -51,15 +60,16 @@ class UserCrud(BaseCrud):
         password = new_user_data.pop('password')
         new_user_data["hashed_password"] = get_password_hash(password)
         result = User(**new_user_data)
-        self.session.add(result)
-        await self.session.commit()
-        await self.session.refresh(result)
+        self._session.add(result)
+        await self._session.commit()
+        await self._session.refresh(result)
         return result
 
-    async def authenticate(self,
-                           email: str,
-                           password: str
-                           ):
+    async def authenticate(
+            self,
+            email: str,
+            password: str
+    ):
         user = await self.get_by_email(email=email)
 
         if not user or not verify_password(password,
@@ -80,19 +90,22 @@ class UserCrud(BaseCrud):
                 expires_delta=access_token_expires),
             "token_type": "bearer"}
 
-    async def delete_user(self,
-                          user_id: int) -> bool:
-        user = await self._get(model_id=user_id)
+    async def delete_user(
+            self,
+            user_id: int
+    ) -> bool:
+        user = await self.get(user_id=user_id)
         if not user:
             return False
-        await self.session.delete(user)
-        await self.session.commit()
+        await self._session.delete(user)
+        await self._session.commit()
         return True
 
-    async def update_user(self,
-                          user_id: int,
-                          data: UserUpdate
-                          ):
+    async def update_user(
+            self,
+            user_id: int,
+            data: UserUpdate
+    ):
         stmt = (
             update(User).
             where(User.id == user_id).
@@ -100,9 +113,9 @@ class UserCrud(BaseCrud):
             returning(User)
         )
         try:
-            result = await self.session.scalar(stmt)
-            await self.session.commit()
-            await self.session.refresh(result)
+            result = await self._session.scalar(stmt)
+            await self._session.commit()
+            await self._session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False
@@ -113,29 +126,26 @@ class UserCrud(BaseCrud):
                               ) -> bool:
         new_password_hash = get_password_hash(new_password)
         setattr(user, 'hashed_password', new_password_hash)
-        self.session.add(user)
-        await self.session.commit()
-        await self.session.refresh(user)
+        self._session.add(user)
+        await self._session.commit()
+        await self._session.refresh(user)
         return True
 
     async def activate_user(self,
                             user: UserInDB
                             ) -> bool:
         setattr(user, 'is_active', True)
-        self.session.add(user)
-        await self.session.commit()
-        await self.session.refresh(user)
+        self._session.add(user)
+        await self._session.commit()
+        await self._session.refresh(user)
         return True
 
-    async def get_list_user(
-            self,
-            offset: int = 0,
-            limit: int = 20
-    ):
-        stmt = (
-            select(User).
-            offset(offset).
-            limit(limit)
-        )
-        result = await self.session.scalars(stmt)
-        return result.all()
+    async def is_active(self,
+                        user: UserInDB
+                        ) -> bool:
+        return user.is_active
+
+    async def is_superuser(self,
+                           user: UserInDB
+                           ) -> bool:
+        return user.is_superuser

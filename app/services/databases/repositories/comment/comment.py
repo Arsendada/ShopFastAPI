@@ -15,9 +15,9 @@ class CommentCrud(BaseCrud):
             data: CommentModel
     ):
         new_comment = Comment(**data.dict(), user_id=user_id)
-        self.session.add(new_comment)
-        await self.session.commit()
-        await self.session.refresh(new_comment)
+        self._session.add(new_comment)
+        await self._session.commit()
+        await self._session.refresh(new_comment)
         return new_comment
 
     async def delete_comment(
@@ -27,37 +27,33 @@ class CommentCrud(BaseCrud):
         result = await self._get(model_id=comment_id)
         if not result:
             return False
-        await self.session.delete(result)
-        await self.session.commit()
+        await self._session.delete(result)
+        await self._session.commit()
         return True
 
 
-    async def get_by_user_id(
+    async def get_user_comment(
             self,
-            user_id: int
+            offset: int,
+            limit: int,
+            value: int
+
     ):
-        stmt = (
-            select(Comment).
-            where(Comment.user_id == user_id)
+        return await self._get_list(
+            offset=offset,
+            limit=limit,
+            field=self.model.user_id,
+            value=value,
+            unique=True
         )
-        result = await self.session.scalars(stmt)
-        return result.unique().all()
 
     async def get_list_comment(
             self,
             offset: int = 0,
             limit: int = 20
     ):
-        stmt = (
-            select(Comment).
-            offset(offset).
-            limit(limit)
+        return await self._get_list(
+            offset=offset,
+            limit=limit,
+            unique=True
         )
-        result = await self.session.scalars(stmt)
-        return result.unique().all()
-
-    async def get_comment_by_id(
-            self,
-            comment_id: int
-    ):
-        return await self._get(model_id=comment_id)

@@ -18,47 +18,42 @@ class ProductCrud(BaseCrud):
         if not category_id:
             return f'Missing category with id {data.category_id}'
         new_product = Product(**data.dict())
-        self.session.add(new_product)
-        await self.session.commit()
-        await self.session.refresh(new_product)
+        self._session.add(new_product)
+        await self._session.commit()
+        await self._session.refresh(new_product)
         return new_product
 
-    async def get_product(self,
-                          product_id
-                          ):
-        result = await self._get(model_id=product_id)
+    async def get_detail_product(
+            self,
+            product_id: int,
+    ):
+        result = await self._get(
+            field=self.model.id,
+            value=product_id
+        )
 
         if result:
             return result
 
         return {'message': 'Product does not exist'}
 
-    async def get_all_product(self,
-                              offset: int = 0,
-                              limit: int = 20
-                              ):
-        stmt = (
-            select(Product).
-            offset(offset).
-            limit(limit)
-        )
-        result = await self.session.scalars(stmt)
-        return result.all()
-
-    async def get_all_product_by_category(
+    async def get_list(
             self,
-            category_id: int,
             offset: int = 0,
-            limit: int = 20
-    ):
-        stmt = (
-            select(Product).
-            where(Product.category_id == category_id).
-            offset(offset).
-            limit(limit)
+            limit: int = 20,
+            category_id: int = None
+):
+        if category_id:
+            return await self._get_list(
+                limit=limit,
+                offset=offset,
+                field=self.model.category_id,
+                value=category_id
+            )
+        return await self._get_list(
+            limit=limit,
+            offset=offset
         )
-        result = await self.session.scalars(stmt)
-        return result.all()
 
     async def delete_product(self,
                              product_id: int
@@ -66,8 +61,8 @@ class ProductCrud(BaseCrud):
         product_db = await self._get(model_id=product_id)
         if not product_db:
             return False
-        await self.session.delete(product_db)
-        await self.session.commit()
+        await self._session.delete(product_db)
+        await self._session.commit()
         return True
 
     async def update_product(self,
@@ -81,9 +76,9 @@ class ProductCrud(BaseCrud):
         )
 
         try:
-            result = await self.session.scalar(stmt)
-            await self.session.commit()
-            await self.session.refresh(result)
+            result = await self._session.scalar(stmt)
+            await self._session.commit()
+            await self._session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False

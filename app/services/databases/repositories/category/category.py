@@ -15,15 +15,21 @@ class CategoryCrud(BaseCrud):
             req: CategoryModel
     ):
         new_category = Category(**req.dict())
-        self.session.add(new_category)
-        await self.session.commit()
-        await self.session.refresh(new_category)
+        self._session.add(new_category)
+        await self._session.commit()
+        await self._session.refresh(new_category)
         return new_category
 
-    async def get_all_category(self) -> list[Category]:
-        all_category = select(Category)
-        result = await self.session.scalars(all_category)
-        return result.all()
+    async def get_list(
+            self,
+            limit: int,
+            offset: int,
+    ):
+
+        return await self._get_list(
+            limit=limit,
+            offset=offset
+        )
 
     async def delete_category(
             self,
@@ -32,16 +38,19 @@ class CategoryCrud(BaseCrud):
         category_db = await self._get(model_id=category_id)
         if not category_db:
             return False
-        await self.session.delete(category_db)
-        await self.session.commit()
+        await self._session.delete(category_db)
+        await self._session.commit()
         return True
 
-    async def get_category_by_id(
+    async def detail_category(
             self,
-            cat_id: int
+            category_id: int
     ):
 
-        return await self._get(model_id=cat_id)
+        return await self._get(
+            field=self.model.id,
+            value=category_id,
+        )
 
     async def update_category_by_id(
             self,
@@ -55,9 +64,9 @@ class CategoryCrud(BaseCrud):
             returning(Category)
         )
         try:
-            result = await self.session.scalar(stmt)
-            await self.session.commit()
-            await self.session.refresh(result)
+            result = await self._session.scalar(stmt)
+            await self._session.commit()
+            await self._session.refresh(result)
             return result
         except UnmappedInstanceError:
             return False

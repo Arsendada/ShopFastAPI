@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.services.databases.schemas.product.product import ProductModel
-from app.services.databases.repositories.product.productcrud import ProductCrud
+from app.services.databases.repositories.product.product import ProductCrud
 from app.services.security.permissions import get_current_active_superuser
 
 router = APIRouter()
@@ -21,33 +21,23 @@ async def get_product(
         product_id: int,
         crud: ProductCrud = Depends()
 ):
-    result = await crud.get_product(product_id)
+    result = await crud.get_detail_product(product_id)
     return result
 
 
-@router.get('/all_product')
-async def get_all_product(
+@router.get('/list_product')
+async def get_list(
         offset: int = 0,
         limit: int = 20,
+        category_id: int = None,
         crud: ProductCrud = Depends()
 ):
-    result = await crud.get_all_product(offset, limit)
+    result = await crud.get_list(
+        offset=offset,
+        limit=limit,
+        category_id=category_id
+    )
     return result
-
-
-@router.get('/all_product_by_category/{category_id}')
-async def get_all_product_by_category(
-        category_id: int,
-        offset: int = 0,
-        limit: int = 20,
-        crud: ProductCrud = Depends()
-):
-    result = await crud.get_all_product_by_category(category_id,
-                                                    offset,
-                                                    limit)
-    if result:
-        return result
-    return 'Product does not exist'
 
 
 @router.delete('/delete/{product_id}', dependencies=[Depends(get_current_active_superuser)])

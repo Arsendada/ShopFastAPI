@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException
 import random
-from app.services.databases.repositories.product.productcrud import ProductCrud
+from app.services.databases.repositories.product.product import ProductCrud
 from app.services.cart.cart import Cart
 
 router = APIRouter()
@@ -16,7 +16,7 @@ async def cart_add(
 ):
     try:
         cart = Cart(request)
-        product = await crud.get_product(product_id)
+        product = await crud.get_detail_product(product_id)
         cart.add_to_cart(request=request,
                          product=product,
                          quantity=quantity,

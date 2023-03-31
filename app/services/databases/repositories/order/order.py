@@ -15,34 +15,41 @@ class OrderCrud(BaseCrud):
     ):
 
         new_order = Order(**data.dict())
-        self.session.add(new_order)
-        await self.session.commit()
-        await self.session.refresh(new_order)
+        self._session.add(new_order)
+        await self._session.commit()
+        await self._session.refresh(new_order)
         return new_order
 
     async def get_detail_order(
             self,
             order_id: int
     ):
-        return await self._get(model_id=order_id)
+        return await self._get(
+            field=self.model.id,
+            value=order_id,
+        )
 
-    async def get_list_order(
+    async def list_order(
             self,
             offset: int = 0,
             limit: int = 20
     ):
-        stmt = (
-            select(Order).
-            offset(offset).
-            limit(limit)
+        return await self._get_list(
+            offset=offset,
+            limit=limit,
+            unique=True
         )
-        result = await self.session.scalars(stmt)
-        return result.unique().all()
 
-    async def get_by_email(
+    async def get_user_order(
             self,
-            email: str
+            value: str,
+            offset: int,
+            limit: int
     ):
-        stmt = (select(Order).where(Order.email == email))
-        result = await self.session.scalars(stmt)
-        return result.unique().all()
+        return await self._get_list(
+            offset=offset,
+            limit=limit,
+            field=self.model.email,
+            value=value,
+            unique=True
+        )

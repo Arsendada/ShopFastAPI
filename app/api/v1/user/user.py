@@ -52,12 +52,14 @@ async def delete_user(
     return result
 
 
-@router.get('/list/{offset}/{limit}', dependencies=[Depends(get_current_active_superuser)])
+@router.get('/list', dependencies=[Depends(get_current_active_superuser)])
 async def get_list_user(
         offset: int = 0,
         limit: int = 10,
         crud: UserCrud = Depends()):
 
-    result = await crud.get_list_user(offset=offset,
-                                      limit=limit)
+    result = await crud.get_list_user(
+        offset=offset,
+        limit=limit
+    )
     return result
