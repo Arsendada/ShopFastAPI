@@ -36,8 +36,8 @@ async def delete_category(
 ):
     result = await crud.delete_category(category_id=category_id)
     if result:
-        return True
-    return False
+        return {'message': "Removal was successful"}
+    return {"message": "category does not exist"}
 
 
 @router.get('/detail/{cat_id}')

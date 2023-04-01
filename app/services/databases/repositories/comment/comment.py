@@ -24,12 +24,10 @@ class CommentCrud(BaseCrud):
             self,
             comment_id: int
     ):
-        result = await self._get(model_id=comment_id)
-        if not result:
-            return False
-        await self._session.delete(result)
-        await self._session.commit()
-        return True
+        return await self._delete(
+            field=self.model.id,
+            value=comment_id
+        )
 
 
     async def get_user_comment(
@@ -56,4 +54,13 @@ class CommentCrud(BaseCrud):
             offset=offset,
             limit=limit,
             unique=True
+        )
+
+    async def detail_comment(
+            self,
+            comment_id: int
+    ):
+        return await self._get(
+            field=self.model.id,
+            value=comment_id
         )

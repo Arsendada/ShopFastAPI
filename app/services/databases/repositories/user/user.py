@@ -31,7 +31,7 @@ class UserCrud(BaseCrud):
     async def get_by_email(
             self,
             email: EmailStr
-    ):
+    ) -> Optional[UserInDB]:
         result = await self._get(
             field=self.model.email,
             value=email
@@ -94,12 +94,9 @@ class UserCrud(BaseCrud):
             self,
             user_id: int
     ) -> bool:
-        user = await self.get(user_id=user_id)
-        if not user:
-            return False
-        await self._session.delete(user)
-        await self._session.commit()
-        return True
+        return await self._delete(
+            field=self.model.id,
+            model_id=user_id)
 
     async def update_user(
             self,

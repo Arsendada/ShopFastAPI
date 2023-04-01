@@ -47,8 +47,8 @@ async def delete_product(
 ):
     result = await crud.delete_product(product_id)
     if result:
-        return True
-    return False
+        return {"message": "product successfully deleted"}
+    return {"message": "product does not exists"}
 
 
 @router.patch('/update/{product_id}', dependencies=[Depends(get_current_active_superuser)])

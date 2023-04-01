@@ -3,7 +3,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from app.services.databases.models.product.product import Category
 from app.services.databases.repositories.base import BaseCrud
 from app.services.databases.schemas.category.category import CategoryModel
-from sqlalchemy import update, select
+from sqlalchemy import update, select, delete
 
 
 class CategoryCrud(BaseCrud):
@@ -35,12 +35,11 @@ class CategoryCrud(BaseCrud):
             self,
             category_id: int
     ):
-        category_db = await self._get(model_id=category_id)
-        if not category_db:
-            return False
-        await self._session.delete(category_db)
-        await self._session.commit()
-        return True
+
+        return await self._delete(
+            field=self.model.id,
+            model_id=category_id)
+
 
     async def detail_category(
             self,

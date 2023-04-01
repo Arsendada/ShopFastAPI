@@ -26,14 +26,15 @@ async def delete_comment(
         user: UserInDB = Depends(get_current_active_user),
         crud: CommentCrud = Depends()
 ):
-    comment = await crud.get_comment_by_id(comment_id=comment_id)
+    comment = await crud.detail_comment(comment_id=comment_id)
     if not comment:
         return {'messages': 'Comment does not exists'}
     if not (user.id == comment.user_id or user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
     result = await crud.delete_comment(comment_id=comment_id)
     if result:
-        return {'messages': 'Success'}
+        return {'messages': "comment successfully deleted"}
+    return {'messages': "category does not exist"}
 
 
 @router.get('/get_list_comment', dependencies=[Depends(get_current_active_superuser)])

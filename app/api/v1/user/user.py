@@ -49,7 +49,9 @@ async def delete_user(
     if not (current_user.id == user_id or current_user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
     result = await crud.delete_user(user_id)
-    return result
+    if result:
+        return {"message": "user successfully deleted"}
+    return {"message": "user does not exists"}
 
 
 @router.get('/list', dependencies=[Depends(get_current_active_superuser)])

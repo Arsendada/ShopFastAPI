@@ -1,5 +1,5 @@
 from typing import Optional, List, TypeVar, Type, ClassVar, Any
-from sqlalchemy import select
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 
@@ -65,3 +65,20 @@ class BaseCrud:
             result=result,
             unique=unique
         )
+
+    async def _delete(
+            self,
+            field: Any,
+            model_id: int,
+    ) -> bool:
+        model_db = await self._get(
+            field=field,
+            value=model_id
+        )
+        if not model_db:
+            return False
+        await self._session.delete(model_db)
+        await self._session.commit()
+        return True
+
+

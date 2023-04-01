@@ -55,15 +55,14 @@ class ProductCrud(BaseCrud):
             offset=offset
         )
 
-    async def delete_product(self,
-                             product_id: int
-                             ) -> bool:
-        product_db = await self._get(model_id=product_id)
-        if not product_db:
-            return False
-        await self._session.delete(product_db)
-        await self._session.commit()
-        return True
+    async def delete_product(
+            self,
+            product_id: int
+    ) -> bool:
+
+        return await self._delete(
+            field=self.model.id,
+            model_id=product_id)
 
     async def update_product(self,
                              product_id: int,
