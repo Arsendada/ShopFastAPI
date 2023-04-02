@@ -35,9 +35,9 @@ async def update_user(
 ):
     if not (current_user.id == user_id or current_user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
-    result = await crud.update_user(user_id,
-                                    data)
-    return result
+    return crud.update_user(
+        user_id=user_id,
+        data=data)
 
 
 @router.delete('/delete/{user_id}')

@@ -67,17 +67,8 @@ class ProductCrud(BaseCrud):
     async def update_product(self,
                              product_id: int,
                              data: ProductModel) -> bool:
-        stmt = (
-            update(Product).
-            where(Product.id == product_id).
-            values(**data.dict()).
-            returning(Product)
+        return await self._update(
+            field=self.model.id,
+            value=product_id,
+            data=data
         )
-
-        try:
-            result = await self._session.scalar(stmt)
-            await self._session.commit()
-            await self._session.refresh(result)
-            return result
-        except UnmappedInstanceError:
-            return False

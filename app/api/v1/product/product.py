@@ -57,7 +57,9 @@ async def update_product(
         product_model: ProductModel,
         crud: ProductCrud = Depends()
 ):
-    result = await crud.update_product(product_id, product_model)
+    result = await crud.update_product(
+        product_id=product_id,
+        data=product_model)
     if result:
         return result
     raise HTTPException(404, f'Category id {product_id} does not found ')

@@ -103,19 +103,11 @@ class UserCrud(BaseCrud):
             user_id: int,
             data: UserUpdate
     ):
-        stmt = (
-            update(User).
-            where(User.id == user_id).
-            values(**data.dict()).
-            returning(User)
+        return await self._update(
+            field=self.model.id,
+            value=user_id,
+            data=data
         )
-        try:
-            result = await self._session.scalar(stmt)
-            await self._session.commit()
-            await self._session.refresh(result)
-            return result
-        except UnmappedInstanceError:
-            return False
 
     async def password_change(self,
                               user: UserInDB,
