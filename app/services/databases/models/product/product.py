@@ -23,8 +23,8 @@ class Product(Base):
     available = Column(Boolean, default=True)
     description = Column(Text, default=None, nullable=True)
 
-    category = relationship('Category', back_populates="products", lazy=True)
-    comments = relationship('Comment', back_populates="products", lazy=True)
+    category = relationship('Category', back_populates="products")
+    comments = relationship('Comment', back_populates="products")
 
 
 class Comment(Base):
