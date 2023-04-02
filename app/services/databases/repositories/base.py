@@ -1,7 +1,9 @@
 from typing import Optional, List, TypeVar, Type, ClassVar, Any
 from sqlalchemy import select, update, delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.core.session import get_session
 
@@ -81,4 +83,24 @@ class BaseCrud:
         await self._session.commit()
         return True
 
-
+    async def _update(
+            self,
+            field: Any,
+            value: Any,
+            data: Model
+    ) -> Model:
+        stmt = (
+            update(self.model).
+            where(field == value).
+            values(**data.dict()).
+            returning(self.model)
+        )
+        try:
+            result = await self._session.scalar(stmt)
+            await self._session.commit()
+            await self._session.refresh(result)
+            return result
+        except UnmappedInstanceError:
+            return False
+        except IntegrityError:
+            return False

@@ -53,10 +53,14 @@ async def get_category(
 
 @router.patch('/update/{id}', dependencies=[Depends(get_current_active_superuser)])
 async def update_category(
-        cat_id: int, cat_model: CategoryModel,
+        category_id: int,
+        category_model: CategoryModel,
         crud: CategoryCrud = Depends()
 ):
-    result = await crud.update_category_by_id(cat_id, cat_model)
+    result = await crud.update_category(
+        category_id=category_id,
+        data=category_model)
     if result:
         return result
-    raise HTTPException(404, f'Category id {cat_id} does not found ')
+    raise HTTPException(404, f'Category id {category_id} '
+                             f'does not found or category name already exists')

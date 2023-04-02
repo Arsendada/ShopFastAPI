@@ -51,21 +51,13 @@ class CategoryCrud(BaseCrud):
             value=category_id,
         )
 
-    async def update_category_by_id(
+    async def update_category(
             self,
-            cat_id: int,
+            category_id: int,
             data: CategoryModel
     ):
-        stmt = (
-            update(Category).
-            where(Category.id == cat_id).
-            values(**data.dict()).
-            returning(Category)
+        return await self._update(
+            field=self.model.id,
+            value=category_id,
+            data=data
         )
-        try:
-            result = await self._session.scalar(stmt)
-            await self._session.commit()
-            await self._session.refresh(result)
-            return result
-        except UnmappedInstanceError:
-            return False
