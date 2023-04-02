@@ -18,23 +18,19 @@ class UserCrud(BaseCrud):
 
     async def get(
             self,
-            user_id: int
+            user_id: int = None,
+            email: str = None
     ) -> Optional[UserInDB]:
-        result = await self._get(
-            field=self.model.id,
-            value=user_id
-        )
-        return result
-
-    async def get_by_email(
-            self,
-            email: EmailStr
-    ) -> Optional[UserInDB]:
-        result = await self._get(
+        if user_id:
+            return await self._get(
+                field=self.model.id,
+                value=user_id
+            )
+        return await self._get(
             field=self.model.email,
             value=email
         )
-        return result
+
 
     async def get_list_user(
             self,
@@ -50,7 +46,7 @@ class UserCrud(BaseCrud):
             self,
             user: UserCreate
     ) -> UserInDB:
-        check_email = await self.get_by_email(email=user.email)
+        check_email = await self.get(email=user.email)
         if check_email:
             raise HTTPException(status_code=404,
                                 detail="User already exist.")
@@ -68,7 +64,7 @@ class UserCrud(BaseCrud):
             email: str,
             password: str
     ):
-        user = await self.get_by_email(email=email)
+        user = await self.get(email=email)
 
         if not user or not verify_password(password,
                                            user.hashed_password):

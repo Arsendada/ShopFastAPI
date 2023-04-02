@@ -33,7 +33,7 @@ async def recover_password(
         email: str,
         crud: UserCrud = Depends()
 ):
-    user = await crud.get_by_email(email=email)
+    user = await crud.get(email=email)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -59,7 +59,7 @@ async def password_change(
     if not email:
         raise HTTPException(status_code=400,
                             detail="Invalid token")
-    user = await crud.get_by_email(email=email)
+    user = await crud.get(email=email)
 
     if not user:
         raise HTTPException(
@@ -82,7 +82,7 @@ async def activate_user(
         crud: UserCrud = Depends()
 ):
     email = verify_new_token(token).get('email')
-    user = await crud.get_by_email(email=email)
+    user = await crud.get(email=email)
     if user:
         await crud.activate_user(user_id=user.id)
         return {"success": True,
