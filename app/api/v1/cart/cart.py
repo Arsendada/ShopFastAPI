@@ -29,7 +29,10 @@ async def cart_add(
 
 
 @router.delete('/delete')
-async def cart_delete(product_id: str, request: Request):
+async def cart_delete(
+        product_id: str,
+        request: Request
+):
     cart = Cart(request)
     result = cart.remove(request=request,
                          product_id=product_id)

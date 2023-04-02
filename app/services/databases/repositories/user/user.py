@@ -2,8 +2,6 @@ from datetime import timedelta
 from typing import Optional
 from fastapi import HTTPException
 from pydantic import EmailStr
-from sqlalchemy import select, update
-from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.services.security.jwt import create_access_token
 from app.services.security.password_security import verify_password
@@ -103,31 +101,36 @@ class UserCrud(BaseCrud):
             user_id: int,
             data: UserUpdate
     ):
+        data = data.__dict__
         return await self._update(
             field=self.model.id,
             value=user_id,
             data=data
         )
 
-    async def password_change(self,
-                              user: UserInDB,
-                              new_password: str
-                              ) -> bool:
+    async def password_change(
+            self,
+            user_id: int,
+            new_password: str
+    ) -> UserInDB:
         new_password_hash = get_password_hash(new_password)
-        setattr(user, 'hashed_password', new_password_hash)
-        self._session.add(user)
-        await self._session.commit()
-        await self._session.refresh(user)
-        return True
+        data = {"hashed_password": new_password_hash}
+        return await self._update(
+            field=self.model.id,
+            value=user_id,
+            data=data
+        )
 
-    async def activate_user(self,
-                            user: UserInDB
-                            ) -> bool:
-        setattr(user, 'is_active', True)
-        self._session.add(user)
-        await self._session.commit()
-        await self._session.refresh(user)
-        return True
+    async def activate_user(
+            self,
+            user_id: int
+    ) -> bool:
+        data = {'is_active': True}
+        return await self._update(
+            field=self.model.id,
+            value=user_id,
+            data=data
+        )
 
     async def is_active(self,
                         user: UserInDB

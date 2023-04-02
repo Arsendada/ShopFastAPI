@@ -69,8 +69,10 @@ async def password_change(
     elif not user.is_active:
         raise HTTPException(status_code=400,
                             detail="Inactive user")
-    result = await crud.password_change(user=user,
-                                        new_password=new_password.password)
+    result = await crud.password_change(
+        user_id=user.id,
+        new_password=new_password.password
+    )
     return result
 
 
@@ -82,7 +84,7 @@ async def activate_user(
     email = verify_new_token(token).get('email')
     user = await crud.get_by_email(email=email)
     if user:
-        await crud.activate_user(user=user)
+        await crud.activate_user(user_id=user.id)
         return {"success": True,
                 'detail': f'User {user.username} has registered by email: {user.email} '}
     return {'detail': 'Registration time expired'}

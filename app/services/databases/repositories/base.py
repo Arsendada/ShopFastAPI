@@ -73,27 +73,28 @@ class BaseCrud:
             field: Any,
             model_id: int,
     ) -> bool:
-        model_db = await self._get(
-            field=field,
-            value=model_id
+        stmt = (
+            delete(self.model)
+            .where(field == model_id)
         )
-        if not model_db:
-            return False
-        await self._session.delete(model_db)
+
+        result = await self._session.execute(stmt)
         await self._session.commit()
-        return True
+        if result.rowcount:
+            return True
+        return False
 
     async def _update(
             self,
             field: Any,
             value: Any,
-            data: Model
+            data: dict
     ) -> Model:
         stmt = (
-            update(self.model).
-            where(field == value).
-            values(**data.dict()).
-            returning(self.model)
+            update(self.model)
+            .where(field == value)
+            .values(**data)
+            .returning(self.model)
         )
         try:
             result = await self._session.scalar(stmt)
@@ -104,3 +105,9 @@ class BaseCrud:
             return False
         except IntegrityError:
             return False
+
+    async def _create(
+            self,
+            data: dict
+    ):
+        pass

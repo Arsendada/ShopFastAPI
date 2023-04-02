@@ -35,7 +35,7 @@ async def update_user(
 ):
     if not (current_user.id == user_id or current_user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
-    return crud.update_user(
+    return await crud.update_user(
         user_id=user_id,
         data=data)
 
@@ -48,7 +48,7 @@ async def delete_user(
 ) -> bool:
     if not (current_user.id == user_id or current_user.is_superuser):
         return {'messages': 'The user does not have rights or is not an admin'}
-    result = await crud.delete_user(user_id)
+    result = await crud.delete_user(user_id=user_id)
     if result:
         return {"message": "user successfully deleted"}
     return {"message": "user does not exists"}

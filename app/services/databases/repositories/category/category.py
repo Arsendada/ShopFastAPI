@@ -56,6 +56,7 @@ class CategoryCrud(BaseCrud):
             category_id: int,
             data: CategoryModel
     ):
+        data = data.__dict__
         return await self._update(
             field=self.model.id,
             value=category_id,

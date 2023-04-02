@@ -15,7 +15,10 @@ async def create_comment(
         crud: CommentCrud = Depends(),
 ):
     if user.is_active or user.is_superuser:
-        result = await crud.add_comment(user_id=user.id, data=data)
+        result = await crud.add_comment(
+            user_id=user.id,
+            data=data
+        )
         return result
     return {'message': 'User is not active or admin'}
 

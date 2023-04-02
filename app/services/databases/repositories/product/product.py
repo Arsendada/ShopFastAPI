@@ -67,6 +67,7 @@ class ProductCrud(BaseCrud):
     async def update_product(self,
                              product_id: int,
                              data: ProductModel) -> bool:
+        data = data.__dict__
         return await self._update(
             field=self.model.id,
             value=product_id,
