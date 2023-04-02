@@ -1,4 +1,6 @@
 from typing import Optional, List, TypeVar, Type, ClassVar, Any
+
+from asyncpg import UniqueViolationError
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -110,4 +112,15 @@ class BaseCrud:
             self,
             data: dict
     ):
-        pass
+        try:
+            new_obj = self.model(**data)
+            self._session.add(new_obj)
+            await self._session.commit()
+            await self._session.refresh(new_obj)
+            return new_obj
+        except UniqueViolationError:
+            return False
+        except IntegrityError:
+            return False
+        except UnmappedInstanceError:
+            return False

@@ -10,18 +10,11 @@ class ProductCrud(BaseCrud):
 
     model = Product
 
-    async def add_product(self,
-                          data: ProductModel
-                          ):
-        category_id = await self._get(model_email=data.category_id)
-
-        if not category_id:
-            return f'Missing category with id {data.category_id}'
-        new_product = Product(**data.dict())
-        self._session.add(new_product)
-        await self._session.commit()
-        await self._session.refresh(new_product)
-        return new_product
+    async def add_product(
+            self,
+            data: ProductModel
+    ):
+        return await self._create(data=data.__dict__)
 
     async def get_detail_product(
             self,

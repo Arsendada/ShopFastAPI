@@ -44,20 +44,12 @@ class UserCrud(BaseCrud):
 
     async def create_user(
             self,
-            user: UserCreate
+            data: UserCreate
     ) -> UserInDB:
-        check_email = await self.get(email=user.email)
-        if check_email:
-            raise HTTPException(status_code=404,
-                                detail="User already exist.")
-        new_user_data = user.dict()
+        new_user_data = data.__dict__
         password = new_user_data.pop('password')
         new_user_data["hashed_password"] = get_password_hash(password)
-        result = User(**new_user_data)
-        self._session.add(result)
-        await self._session.commit()
-        await self._session.refresh(result)
-        return result
+        return await self._create(new_user_data)
 
     async def authenticate(
             self,

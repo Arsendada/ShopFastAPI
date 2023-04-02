@@ -9,11 +9,15 @@ router = APIRouter()
 
 @router.post('/create', dependencies=[Depends(get_current_active_superuser)])
 async def category_create(
-        req: CategoryModel,
+        data: CategoryModel,
         crud: CategoryCrud = Depends()
 ):
-    result = await crud.add_category(req)
-    return result
+    result = await crud.add_category(data=data)
+    if result:
+        return result
+    return {"message": "An invalid element was passed, "
+                       "or a category with the specified name"
+                       " already exists"}
 
 
 @router.get('/list')

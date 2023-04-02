@@ -9,10 +9,10 @@ router = APIRouter()
 
 @router.post('/create', dependencies=[Depends(get_current_active_superuser)])
 async def create_product(
-        req: ProductModel,
+        data: ProductModel,
         crud: ProductCrud = Depends()
 ):
-    result = await crud.add_product(req)
+    result = await crud.add_product(data=data)
     return result
 
 
@@ -22,7 +22,10 @@ async def get_product(
         crud: ProductCrud = Depends()
 ):
     result = await crud.get_detail_product(product_id)
-    return result
+    if result:
+        return result
+    return {"message": "Invalid values entered. "
+                       "Maybe category_id is not created"}
 
 
 @router.get('/list_product')

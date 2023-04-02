@@ -12,13 +12,9 @@ class CategoryCrud(BaseCrud):
 
     async def add_category(
             self,
-            req: CategoryModel
+            data: CategoryModel
     ):
-        new_category = Category(**req.dict())
-        self._session.add(new_category)
-        await self._session.commit()
-        await self._session.refresh(new_category)
-        return new_category
+        return await self._create(data=data.__dict__)
 
     async def get_list(
             self,

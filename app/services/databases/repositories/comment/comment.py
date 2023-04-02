@@ -14,11 +14,9 @@ class CommentCrud(BaseCrud):
             user_id: str,
             data: CommentModel
     ):
-        new_comment = Comment(**data.dict(), user_id=user_id)
-        self._session.add(new_comment)
-        await self._session.commit()
-        await self._session.refresh(new_comment)
-        return new_comment
+        new_comment = data.__dict__
+        new_comment["user_id"] = user_id
+        return await self._create(data=new_comment)
 
     async def delete_comment(
             self,

@@ -27,11 +27,13 @@ async def add_order(
     order_obj = await order_crud.add_order(order)
 
     for product in values:
-        await item_crud.add_item(name=values[product]['name'],
-                                 price=values[product]['price'],
-                                 quantity=values[product]['quantity'],
-                                 order_id=order_obj.id,
-                                 product_id=int(product))
+        await item_crud.add_item(
+            name=values[product]['name'],
+            price=values[product]['price'],
+            quantity=values[product]['quantity'],
+            order_id=order_obj.id,
+            product_id=int(product)
+        )
     result_order = await order_crud.get_detail_order(order_obj.id)
     cart.clear(request)
 

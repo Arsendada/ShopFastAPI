@@ -22,8 +22,10 @@ async def user_create(
         username=user.username,
         token=token
     )
-    return {'result': result,
-            'message': 'Confirm your mail'}
+    if result:
+        return {'result': result,
+                'message': 'Confirm your mail'}
+    return {"message": "Invalid values entered or user already exists"}
 
 
 @router.put('/update/{user_id}')

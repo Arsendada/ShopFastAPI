@@ -14,11 +14,7 @@ class OrderCrud(BaseCrud):
             data: OrderModel
     ):
 
-        new_order = Order(**data.dict())
-        self._session.add(new_order)
-        await self._session.commit()
-        await self._session.refresh(new_order)
-        return new_order
+        return await self._create(data=data.__dict__)
 
     async def get_detail_order(
             self,
