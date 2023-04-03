@@ -1,3 +1,5 @@
+from typing import Dict
+
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -16,7 +18,7 @@ reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 async def get_current_user(
         crud: UserCrud = Depends(),
         token: str = Depends(reusable_oauth2)
-):
+) -> UserInDB:
     try:
         payload = jwt.decode(token,
                              settings.SECRET_KEY,
@@ -36,7 +38,7 @@ async def get_current_user(
 async def get_current_active_user(
         current_user: UserInDB = Depends(get_current_user),
         crud: UserCrud = Depends()
-):
+) -> UserInDB:
     if not crud.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
@@ -45,7 +47,7 @@ async def get_current_active_user(
 async def get_current_active_superuser(
         current_user: UserInDB = Depends(get_current_user),
         crud: UserCrud = Depends()
-):
+) -> UserInDB:
     if not crud.is_superuser(current_user):
         raise HTTPException(
             status_code=400,

@@ -14,9 +14,13 @@ Model = TypeVar("Model")
 
 
 class BaseCrud:
+
     model: ClassVar[Type[Model]]
 
-    def __init__(self, db: AsyncSession = Depends(get_session)):
+    def __init__(
+            self,
+            db: AsyncSession = Depends(get_session)
+    ):
         self._session = db
 
     async def _get(
@@ -62,7 +66,7 @@ class BaseCrud:
             relation_field: Any,
             filter_field: Any,
             filter_value: Any
-    ):
+    ) -> Optional[List[Model]]:
         stmt = (
             select(self.model)
             .options(selectinload(relation_field))
@@ -78,7 +82,7 @@ class BaseCrud:
             relation_field: Any,
             filter_field: Any = None,
             filter_value: Any = None,
-    ):
+    ) -> Optional[List[Model]]:
         if not (filter_field and filter_value):
             stmt = (
                 select(self.model)
@@ -138,7 +142,7 @@ class BaseCrud:
     async def _create(
             self,
             data: dict
-    ):
+    ) -> Model:
         try:
             new_obj = self.model(**data)
             self._session.add(new_obj)

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
+from app.services.databases.schemas.base import BaseInDB
 
-
-class CategoryModel(BaseModel):
+class CategoryDTO(BaseModel):
     name: str
 
     class Config:
@@ -10,3 +10,5 @@ class CategoryModel(BaseModel):
             "name": "Laptop"
         }
 
+class CategoryInDB(CategoryDTO, BaseInDB):
+    pass

@@ -9,7 +9,11 @@ def number_of_workers() -> int:
 
 
 class StandaloneApplication(Application):
-    def __init__(self, app: Any, options: Optional[Dict[Any, Any]] = None):
+    def __init__(
+            self,
+            app: Any,
+            options: Optional[Dict[Any, Any]] = None
+    ):
         self._options = options
         self._application = app
         super(StandaloneApplication, self).__init__()

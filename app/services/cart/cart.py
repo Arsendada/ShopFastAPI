@@ -1,3 +1,5 @@
+from typing import Dict, Any, Union
+
 from starlette.requests import Request
 from decimal import Decimal
 
@@ -5,7 +7,10 @@ from app.services.databases.models.product.product import Product
 
 
 class Cart:
-    def __init__(self, request: Request) -> None:
+    def __init__(
+            self,
+            request: Request
+    ):
         request.session.setdefault('cart', {})
         self.cart = request.session['cart']
 
@@ -33,20 +38,23 @@ class Cart:
             self,
             request: Request,
             product_id: str
-    ) -> bool:
+    ) -> Dict[str, str]:
 
         if product_id in self.cart:
             del request.session['cart'][product_id]
             return {'message': 'successfully'}
-        return {'message': 'Product not in cart'}
+        return bool
 
-    def get_cart(self):
+    def get_cart(self) -> Dict[str, Union[str, int]]:
         quantity = len(self.cart)
         return {'quantity': quantity, "cart": self.cart}
 
-    def clear(self, request: Request):
+    def clear(
+            self,
+            request: Request
+    ) -> None:
         del request.session['cart']
 
-    def get_total_price(self):
+    def get_total_price(self) -> int:
         return sum(Decimal(item['price'])*item['quantity']
                    for item in self.cart.values())

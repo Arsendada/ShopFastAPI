@@ -1,6 +1,7 @@
+from typing import Dict, Union
+
 from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException
-import random
 from app.services.databases.repositories.product.product import ProductCrud
 from app.services.cart.cart import Cart
 
@@ -13,7 +14,7 @@ async def cart_add(
         quantity: int = 1,
         update_quantity: bool = False,
         crud: ProductCrud = Depends(),
-):
+) -> Dict[str, Union[str, int]]:
     try:
         cart = Cart(request)
         product = await crud.get_detail_product(product_id)
@@ -32,14 +33,17 @@ async def cart_add(
 async def cart_delete(
         product_id: str,
         request: Request
-):
+) -> Dict[str, str]:
     cart = Cart(request)
     result = cart.remove(request=request,
                          product_id=product_id)
-    return result
+    if result:
+        return result
+    raise HTTPException(404, 'Product not in cart')
+
 
 @router.get('/get')
-async def cart_get(request: Request):
+async def cart_get(request: Request) -> Dict[str, Union[str, int]]:
     cart = Cart(request)
     result = cart.get_cart()
     return result

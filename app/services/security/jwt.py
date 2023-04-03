@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Dict, Union
 from jose import jwt
 
 from app.core.settings import settings
@@ -12,7 +12,7 @@ access_token_jwt_subject = "access"
 def create_access_token(
         data: dict,
         expires_delta: timedelta | None = None
-):
+) -> Dict[str, Union[str, datetime]]:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -26,7 +26,7 @@ def create_access_token(
     return encoded_jwt
 
 
-def generate_new_token(email: str) -> str:
+def generate_new_token(email: str) -> Dict[str, str]:
     """Generate new account token"""
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.utcnow()

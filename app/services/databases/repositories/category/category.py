@@ -1,9 +1,8 @@
-from sqlalchemy.orm.exc import UnmappedInstanceError
+from typing import Union, List, Optional
 
 from app.services.databases.models.product.product import Category
 from app.services.databases.repositories.base import BaseCrud
-from app.services.databases.schemas.category.category import CategoryModel
-from sqlalchemy import update, select, delete
+from app.services.databases.schemas.category.category import CategoryDTO, CategoryInDB
 
 
 class CategoryCrud(BaseCrud):
@@ -12,15 +11,15 @@ class CategoryCrud(BaseCrud):
 
     async def add_category(
             self,
-            data: CategoryModel
-    ):
+            data: CategoryDTO
+    ) -> Optional[CategoryInDB]:
         return await self._create(data=data.__dict__)
 
     async def get_list(
             self,
             limit: int,
             offset: int,
-    ):
+    ) -> List[Optional[CategoryInDB]]:
 
         return await self._get_list(
             limit=limit,
@@ -30,7 +29,7 @@ class CategoryCrud(BaseCrud):
     async def delete_category(
             self,
             category_id: int
-    ):
+    ) -> bool:
 
         return await self._delete(
             field=self.model.id,
@@ -40,7 +39,7 @@ class CategoryCrud(BaseCrud):
     async def detail_category(
             self,
             category_id: int
-    ):
+    ) -> Optional[CategoryInDB]:
 
         return await self._get(
             field=self.model.id,
@@ -50,8 +49,8 @@ class CategoryCrud(BaseCrud):
     async def update_category(
             self,
             category_id: int,
-            data: CategoryModel
-    ):
+            data: CategoryDTO
+    ) -> Union[CategoryInDB, bool]:
         data = data.__dict__
         return await self._update(
             field=self.model.id,
