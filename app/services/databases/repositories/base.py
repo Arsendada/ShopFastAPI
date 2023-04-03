@@ -5,6 +5,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
+from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.core.session import get_session
@@ -17,16 +18,6 @@ class BaseCrud:
 
     def __init__(self, db: AsyncSession = Depends(get_session)):
         self._session = db
-
-    @classmethod
-    async def _check_unique(
-            cls,
-            result,
-            unique: bool = False
-    ) -> Optional[List[Model]]:
-        if unique:
-            return result.unique().all()
-        return result.all()
 
     async def _get(
             self,
@@ -48,7 +39,6 @@ class BaseCrud:
             offset: int,
             field: Any = None,
             value: Any = None,
-            unique: bool = False
     ) -> Optional[List[Model]]:
 
         if field and value:
@@ -65,10 +55,47 @@ class BaseCrud:
                 .limit(limit)
             )
         result = await self._session.scalars(stmt)
-        return await self._check_unique(
-            result=result,
-            unique=unique
+        return result.all()
+
+    async def _get_relation_detail_one(
+            self,
+            relation_field: Any,
+            filter_field: Any,
+            filter_value: Any
+    ):
+        stmt = (
+            select(self.model)
+            .options(selectinload(relation_field))
+            .filter(filter_field == filter_value)
         )
+        result = await self._session.scalar(stmt)
+        return result
+
+    async def _get_relation_list(
+            self,
+            limit: int,
+            offset: int,
+            relation_field: Any,
+            filter_field: Any = None,
+            filter_value: Any = None,
+    ):
+        if not (filter_field and filter_value):
+            stmt = (
+                select(self.model)
+                .options(selectinload(relation_field))
+                .offset(offset)
+                .limit(limit)
+            )
+        else:
+            stmt = (
+                select(self.model)
+                .options(selectinload(relation_field))
+                .filter(filter_field == filter_value)
+                .offset(offset)
+                .limit(limit)
+            )
+        result = await self._session.scalars(stmt)
+        return result.all()
 
     async def _delete(
             self,

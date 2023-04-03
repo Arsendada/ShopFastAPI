@@ -10,7 +10,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(VARCHAR(255), unique=True, index=True)
 
-    products = relationship('Product', back_populates="category", lazy=True)
+    products = relationship('Product', back_populates="category")
 
 
 class Product(Base):

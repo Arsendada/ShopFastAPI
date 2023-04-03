@@ -39,8 +39,7 @@ class CommentCrud(BaseCrud):
             offset=offset,
             limit=limit,
             field=self.model.user_id,
-            value=value,
-            unique=True
+            value=value
         )
 
     async def get_list_comment(
@@ -51,7 +50,6 @@ class CommentCrud(BaseCrud):
         return await self._get_list(
             offset=offset,
             limit=limit,
-            unique=True
         )
 
     async def detail_comment(

@@ -3,6 +3,7 @@ from app.services.databases.repositories.base import BaseCrud
 
 
 class ItemCrud(BaseCrud):
+    model = Item
 
     async def add_item(
             self,

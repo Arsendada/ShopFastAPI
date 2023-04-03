@@ -1,5 +1,3 @@
-from sqlalchemy import select
-
 from app.services.databases.models.order.order import Order
 from app.services.databases.repositories.base import BaseCrud
 from app.services.databases.schemas.order.order import OrderModel
@@ -20,9 +18,10 @@ class OrderCrud(BaseCrud):
             self,
             order_id: int
     ):
-        return await self._get(
-            field=self.model.id,
-            value=order_id,
+        return await self._get_relation_detail_one(
+            relation_field=self.model.items,
+            filter_field=self.model.id,
+            filter_value=order_id
         )
 
     async def list_order(
@@ -30,10 +29,10 @@ class OrderCrud(BaseCrud):
             offset: int = 0,
             limit: int = 20
     ):
-        return await self._get_list(
+        return await self._get_relation_list(
             offset=offset,
             limit=limit,
-            unique=True
+            relation_field=self.model.items
         )
 
     async def get_user_order(
@@ -42,10 +41,10 @@ class OrderCrud(BaseCrud):
             offset: int,
             limit: int
     ):
-        return await self._get_list(
+        return await self._get_relation_list(
             offset=offset,
             limit=limit,
-            field=self.model.email,
-            value=value,
-            unique=True
+            filter_field=self.model.email,
+            filter_value=value,
+            relation_field=self.model.items
         )
