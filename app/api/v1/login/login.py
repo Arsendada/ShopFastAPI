@@ -24,7 +24,7 @@ async def login_access_token(
 @router.get("/users/me/", response_model=UserInDB)
 async def read_users_me(
         current_user: UserInDB = Depends(get_current_active_user)
-):
+) -> UserInDB:
     return current_user.__dict__
 
 
