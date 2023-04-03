@@ -6,13 +6,14 @@ from app.services.databases.schemas.base import BaseInDB
 
 class UserPasswordDTO(BaseModel):
     password: str = Field(...)
+
     @validator('password')
     def password_correct(cls, v):
-         pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)' \
-                   r'(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$'
-         if re.match(pattern, v) is None:
-             raise ValueError('Password has incorrect format.')
-         return v
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)' \
+                  r'(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$'
+        if re.match(pattern, v) is None:
+            raise ValueError('Password has incorrect format.')
+        return v
 
     class Config:
         orm_mode = True
@@ -25,8 +26,8 @@ class UserBase(BaseModel):
     email: EmailStr = Field(...)
     username: str = Field(...)
 
-class UserCreateDTO(UserBase, UserPasswordDTO):
 
+class UserCreateDTO(UserBase, UserPasswordDTO):
     class Config:
         orm_mode = True
         schema_extra = {

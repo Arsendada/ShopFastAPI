@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, List, Dict, Union
 from fastapi import HTTPException
 
 from app.services.security.jwt import create_access_token
@@ -8,7 +8,10 @@ from app.core.settings import settings
 from app.services.security.password_security import get_password_hash
 from app.services.databases.repositories.base import BaseCrud
 from app.services.databases.models.user.user import User
-from app.services.databases.schemas.user.user import UserInDB, UserCreate, UserUpdate
+from app.services.databases.schemas.user.user import (UserCreateDTO,
+                                                      UserPasswordDTO,
+                                                      UserUpdateDTO,
+                                                      UserInDB)
 
 
 class UserCrud(BaseCrud):
@@ -35,7 +38,7 @@ class UserCrud(BaseCrud):
             self,
             offset: int = 0,
             limit: int = 20
-    ):
+    ) -> List[Optional[UserInDB]]:
         return await self._get_list(
             limit=limit,
             offset=offset
@@ -43,7 +46,7 @@ class UserCrud(BaseCrud):
 
     async def create_user(
             self,
-            data: UserCreate
+            data: UserCreateDTO
     ) -> UserInDB:
         new_user_data = data.__dict__
         password = new_user_data.pop('password')
@@ -54,7 +57,7 @@ class UserCrud(BaseCrud):
             self,
             email: str,
             password: str
-    ):
+    ) -> Dict[str, str]:
         user = await self.get(email=email)
 
         if not user or not verify_password(password,
@@ -86,8 +89,8 @@ class UserCrud(BaseCrud):
     async def update_user(
             self,
             user_id: int,
-            data: UserUpdate
-    ):
+            data: UserUpdateDTO
+    ) -> Union[UserUpdateDTO, bool]:
         data = data.__dict__
         return await self._update(
             field=self.model.id,
@@ -99,7 +102,7 @@ class UserCrud(BaseCrud):
             self,
             user_id: int,
             new_password: str
-    ) -> UserInDB:
+    ) -> Union[UserInDB, bool]:
         new_password_hash = get_password_hash(new_password)
         data = {"hashed_password": new_password_hash}
         return await self._update(
@@ -111,7 +114,7 @@ class UserCrud(BaseCrud):
     async def activate_user(
             self,
             user_id: int
-    ) -> bool:
+    ) -> Union[UserInDB, bool]:
         data = {'is_active': True}
         return await self._update(
             field=self.model.id,
@@ -119,12 +122,14 @@ class UserCrud(BaseCrud):
             data=data
         )
 
-    async def is_active(self,
-                        user: UserInDB
-                        ) -> bool:
+    async def is_active(
+            self,
+            user: UserInDB
+    ) -> bool:
         return user.is_active
 
-    async def is_superuser(self,
-                           user: UserInDB
-                           ) -> bool:
+    async def is_superuser(
+            self,
+            user: UserInDB
+    ) -> bool:
         return user.is_superuser

@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -5,7 +7,8 @@ from app.services.security.permissions import get_current_active_user
 from app.services.security.jwt import generate_new_token, verify_new_token
 from app.services.databases.repositories.user.user import UserCrud
 from app.services.databases.schemas.tokens.tokens import Token
-from app.services.databases.schemas.user.user import UserInDB, UserUpdatePassword
+from app.services.databases.schemas.user.user import (UserPasswordDTO,
+                                                      UserInDB)
 from app.services.tasks.tasks import task_send_password_reset
 
 router = APIRouter()
@@ -32,7 +35,7 @@ async def read_users_me(
 async def recover_password(
         email: str,
         crud: UserCrud = Depends()
-):
+) -> Dict[str, str]:
     user = await crud.get(email=email)
     if not user:
         raise HTTPException(
@@ -50,10 +53,10 @@ async def recover_password(
 
 @router.post("/password/change/{token}")
 async def password_change(
-        new_password: UserUpdatePassword,
+        new_password: UserPasswordDTO,
         token: str,
         crud: UserCrud = Depends()
-):
+) -> UserInDB:
     email = verify_new_token(token).get('email')
 
     if not email:
@@ -80,11 +83,11 @@ async def password_change(
 async def activate_user(
         token: str,
         crud: UserCrud = Depends()
-):
+) -> Dict[str, Union[bool, str]]:
     email = verify_new_token(token).get('email')
     user = await crud.get(email=email)
     if user:
         await crud.activate_user(user_id=user.id)
         return {"success": True,
                 'detail': f'User {user.username} has registered by email: {user.email} '}
-    return {'detail': 'Registration time expired'}
+    raise HTTPException(404, 'Registration time expired')
