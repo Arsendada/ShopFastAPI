@@ -1,4 +1,4 @@
-from app.services.databases.models.order.order import Item
+from app.services.databases.models.order.item import Item
 from app.services.databases.repositories.base import BaseCrud
 
 

@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import Optional
 from fastapi import HTTPException
-from pydantic import EmailStr
 
 from app.services.security.jwt import create_access_token
 from app.services.security.password_security import verify_password

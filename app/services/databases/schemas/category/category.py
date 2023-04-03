@@ -11,4 +11,11 @@ class CategoryDTO(BaseModel):
         }
 
 class CategoryInDB(CategoryDTO, BaseInDB):
-    pass
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "id": "1",
+            "name": "Laptop",
+            "created_at": "2023-04-02 22:03:21.605901 +00:00",
+            "updated_at": "2023-04-02 22:03:21.605901 +00:00",
+        }

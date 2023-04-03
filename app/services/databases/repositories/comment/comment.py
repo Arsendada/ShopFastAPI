@@ -1,6 +1,4 @@
-from sqlalchemy import select
-
-from app.services.databases.models.product.product import Comment
+from app.services.databases.models.product.comment import Comment
 from app.services.databases.repositories.base import BaseCrud
 from app.services.databases.schemas.comment.comment import CommentModel
 
