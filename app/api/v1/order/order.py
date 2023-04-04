@@ -19,7 +19,7 @@ async def add_order(
         order: OrderDTO,
         order_crud: OrderCrud = Depends(),
         item_crud: ItemCrud = Depends(),
-) -> Dict[str, Union[OrderInDB, int]]:
+) -> Dict[str, str] | Dict[str, Union[int, OrderInDB]]:
     cart = Cart(request)
     values = cart.cart
     if len(values) < 1:

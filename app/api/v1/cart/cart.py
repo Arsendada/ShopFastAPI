@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from starlette.requests import Request
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,15 +14,17 @@ async def cart_add(
         quantity: int = 1,
         update_quantity: bool = False,
         crud: ProductCrud = Depends(),
-) -> Dict[str, Union[str, int]]:
+) -> Dict[str, Dict[str, Union[str, int]]]:
     try:
         cart = Cart(request)
-        product = await crud.get_detail_product(product_id)
-        cart.add_to_cart(request=request,
-                         product=product,
-                         quantity=quantity,
-                         update_quantity=update_quantity)
-        return request.session
+        product = await crud.get_detail_product(product_id=product_id)
+        result = cart.add_to_cart(
+            request=request,
+            product=product,
+            quantity=quantity,
+            update_quantity=update_quantity
+        )
+        return result
     except AttributeError:
         raise HTTPException(
             status_code=404, detail=f"There isn't entry with id={product_id}"
@@ -33,7 +35,7 @@ async def cart_add(
 async def cart_delete(
         product_id: str,
         request: Request
-) -> Dict[str, str]:
+) -> Optional[Dict[str, str]]:
     cart = Cart(request)
     result = cart.remove(request=request,
                          product_id=product_id)
@@ -43,7 +45,9 @@ async def cart_delete(
 
 
 @router.get('/get')
-async def cart_get(request: Request) -> Dict[str, Union[str, int]]:
+async def cart_get(
+        request: Request
+) -> Dict[str, Union[int, Dict[str, Dict[str, Union[str, int]]]]]:
     cart = Cart(request)
     result = cart.get_cart()
     return result

@@ -1,6 +1,6 @@
 from app.services.databases.models.order.item import Item
 from app.services.databases.repositories.base import BaseCrud
-from app.services.databases.schemas.order.item import ItemDTO
+from app.services.databases.schemas.order.item import ItemInDB
 
 
 class ItemCrud(BaseCrud):
@@ -13,7 +13,7 @@ class ItemCrud(BaseCrud):
             quantity: int,
             order_id: int,
             product_id: int
-    ) -> ItemDTO:
+    ) -> ItemInDB:
 
         new_item = dict(
             name=name,

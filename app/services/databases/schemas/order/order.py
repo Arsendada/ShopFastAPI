@@ -1,5 +1,9 @@
+from typing import List
+
 from pydantic import BaseModel, EmailStr
 from app.services.databases.schemas.base import BaseInDB
+from app.services.databases.schemas.order.item import ItemInDB
+
 
 class OrderDTO(BaseModel):
     full_name: str
@@ -20,6 +24,8 @@ class OrderDTO(BaseModel):
         }
 
 class OrderInDB(BaseInDB, OrderDTO):
+
+    items: list[ItemInDB]
     class Config:
         orm_mode = True
         schema_extra = {

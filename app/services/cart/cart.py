@@ -20,7 +20,7 @@ class Cart:
             product: Product,
             quantity: int,
             update_quantity=False,
-    ) -> bool:
+    ) -> Dict[str, Dict[str, Union[str, int]]]:
 
         product_id = str(product.id)
         if product_id not in request.session['cart']:
@@ -32,7 +32,8 @@ class Cart:
             request.session['cart'][product_id]['quantity'] = quantity
         else:
             request.session['cart'][product_id]['quantity'] += quantity
-        return True
+        self.cart = request.session['cart']
+        return self.cart
 
     def remove(
             self,
@@ -43,9 +44,11 @@ class Cart:
         if product_id in self.cart:
             del request.session['cart'][product_id]
             return {'message': 'successfully'}
-        return bool
+        return None
 
-    def get_cart(self) -> Dict[str, Union[str, int]]:
+    def get_cart(
+            self
+    ) -> Dict[str, Union[int, Dict[str, Dict[str, Union[str, int]]]]]:
         quantity = len(self.cart)
         return {'quantity': quantity, "cart": self.cart}
 

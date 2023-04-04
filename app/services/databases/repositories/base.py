@@ -156,5 +156,3 @@ class BaseCrud:
             return None
         except UnmappedInstanceError:
             return None
-        except EndOfStream:
-            return None
