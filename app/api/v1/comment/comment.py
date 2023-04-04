@@ -16,13 +16,16 @@ async def create_comment(
         user: UserInDB = Depends(get_current_active_user),
         crud: CommentCrud = Depends(),
 ) -> CommentInDB:
-    if user.is_active or user.is_superuser:
-        result = await crud.add_comment(
-            user_id=user.id,
-            data=data
-        )
+    if not (user.is_active or user.is_superuser):
+        raise HTTPException(404, 'User is not active or admin')
+    result = await crud.add_comment(
+        user_id=user.id,
+        data=data
+    )
+    if result:
         return result
-    raise HTTPException(404, 'User is not active or admin')
+    raise HTTPException(404, 'Product id does not exists')
+
 
 
 @router.delete('/delete/{comment_id}')

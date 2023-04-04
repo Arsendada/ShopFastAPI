@@ -1,5 +1,6 @@
 from typing import Optional, List, TypeVar, Type, ClassVar, Any
 
+from anyio import EndOfStream
 from asyncpg import UniqueViolationError
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
@@ -115,7 +116,7 @@ class BaseCrud:
         await self._session.commit()
         if result.rowcount:
             return True
-        return False
+        return None
 
     async def _update(
             self,
@@ -135,9 +136,9 @@ class BaseCrud:
             await self._session.refresh(result)
             return result
         except UnmappedInstanceError:
-            return False
+            return None
         except IntegrityError:
-            return False
+            return None
 
     async def _create(
             self,
@@ -150,8 +151,10 @@ class BaseCrud:
             await self._session.refresh(new_obj)
             return new_obj
         except UniqueViolationError:
-            return False
+            return None
         except IntegrityError:
-            return False
+            return None
         except UnmappedInstanceError:
-            return False
+            return None
+        except EndOfStream:
+            return None
