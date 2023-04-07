@@ -14,7 +14,7 @@ app.include_router(api_router.router,
 
 def run_application(app, ) -> None:
     options = {
-        "bind": "%s:%s" % ("0.0.0.0", 8080),
+        "bind": "%s:%s" % ("0.0.0.0", 8000),
         "worker_class": "uvicorn.workers.UvicornWorker",
         "reload": True,
         "disable_existing_loggers": False,

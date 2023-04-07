@@ -1,15 +1,17 @@
 version: '3.10.10'
 services:
   ####################
-  web:
+  app:
     build: .
-    command: bash -c 'alembic upgrade head && python -m app'
+    command: sh -c 'alembic upgrade head && python -m app'
     volumes:
       - ./:/app
+      - static_volume:/home/app/web/backend_static
+      - media_volume:/home/app/web/backend_media
     working_dir: /app
     restart: always
     ports:
-      - "8080:8080"
+      - "8000:8000"
     networks:
       - app_network
     depends_on:
@@ -76,7 +78,22 @@ services:
       - celery
       - redis
   ######################
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - static_volume:/home/app/web/backend_static
+      - media_volume:/home/app/web/backend_media
+    networks:
+      - app_network
+    depends_on:
+      - app
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
 networks:
   app_network:
